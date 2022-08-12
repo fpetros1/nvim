@@ -1,3 +1,6 @@
+
+vim.opt.guifont = 'Hack NF:10'
+
 vim.o.exrc = true  -- exec a local vimrc (like direnv)
 vim.o.relativenumber = true  -- relative number in gutter
 vim.o.nu = true  -- Indent current line number
@@ -32,3 +35,13 @@ vim.opt.listchars = {  -- see hidden chars and their colors
 vim.o.list = true
 vim.o.updatetime = 100
 
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+	vim.lsp.diagnostic.on_publish_diagnostics, {
+		virtual_text = false,
+		underline = true,
+		signs = true,
+	}
+)
+
+vim.cmd [[autocmd CursorHold * lua vim.diagnostic.open_float()]]
+vim.cmd [[autocmd CursorHoldI * silent! lua vim.lsp.buf.signature_help()]]
