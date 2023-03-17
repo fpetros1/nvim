@@ -1,10 +1,10 @@
 options = { noremap = true }
 
 -- Change panes on vim leader mappings
-vim.api.nvim_set_keymap('n', '<leader>h', '<C-w>h', options)
-vim.api.nvim_set_keymap('n', '<leader>j', '<C-w>j', options)
-vim.api.nvim_set_keymap('n', '<leader>k', '<C-w>k', options)
-vim.api.nvim_set_keymap('n', '<leader>l', '<C-w>l', options)
+vim.api.nvim_set_keymap('n', '<leader>wh', '<C-w>h', options)
+vim.api.nvim_set_keymap('n', '<leader>wj', '<C-w>j', options)
+vim.api.nvim_set_keymap('n', '<leader>wk', '<C-w>k', options)
+vim.api.nvim_set_keymap('n', '<leader>wl', '<C-w>l', options)
 
 -- Split with leader
 vim.api.nvim_set_keymap('n', '<leader>ws', '<C-w>s', options)
