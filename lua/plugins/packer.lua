@@ -17,6 +17,7 @@ return require('packer').startup(function()
 
 	-- Load spicy onedark color theme
 	use 'navarasu/onedark.nvim'
+	use { "catppuccin/nvim", as = "catppuccin" }
 
 	-- Treesitter is life
 	use {
