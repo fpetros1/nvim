@@ -6,6 +6,9 @@ lsp.ensure_installed({
     'jdtls',
     'tsserver',
     'rust_analyzer',
+    'bashls',
+    'lua_ls',
+    'jsonls'
 })
 
 -- Fix Undefined global 'vim'
@@ -24,7 +27,6 @@ lsp.set_preferences({
         info = 'I'
     }
 })
-
 
 lsp.on_attach(function(client, bufnr)
     local opts = { buffer = bufnr, remap = false }
@@ -47,5 +49,10 @@ lsp.setup()
 vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
 
 vim.diagnostic.config({
-    virtual_text = true
+    virtual_text = false,
+    virtual_lines = {
+        highlight_whole_line = false
+    }
 })
+
+require("lsp_lines").setup()
