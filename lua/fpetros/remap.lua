@@ -9,12 +9,11 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
-vim.keymap.set("x", "<leader>p", [["_dP]])
 
-vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 vim.keymap.set("n", "<leader>Y", [["+Y]])
 
-vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
+vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
 vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
@@ -29,6 +28,11 @@ vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><
 options = { noremap = true }
 
 -- Change panes on vim leader mappings
+vim.api.nvim_set_keymap("n", "<leader>p", 'A<C-r><C-o>+<ESC>', options)
+vim.api.nvim_set_keymap("n", "<leader>P", 'I<C-r><C-o>+<ESC>', options)
+vim.api.nvim_set_keymap("v", "<leader>p", 'A<C-r><C-o>+<ESC>', options)
+vim.api.nvim_set_keymap("v", "<leader>P", 'I<C-r><C-o>+<ESC>', options)
+
 vim.api.nvim_set_keymap('n', '<leader>wh', '<C-w>h', options)
 vim.api.nvim_set_keymap('n', '<leader>wj', '<C-w>j', options)
 vim.api.nvim_set_keymap('n', '<leader>wk', '<C-w>k', options)

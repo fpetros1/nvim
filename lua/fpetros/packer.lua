@@ -22,6 +22,8 @@ return require('packer').startup(function(use)
 
     use { "catppuccin/nvim", as = "catppuccin" }
 
+    use { 'mfussenegger/nvim-jdtls' }
+
     use { 'glepnir/dashboard-nvim' }
 
     use {
@@ -68,7 +70,7 @@ return require('packer').startup(function(use)
             { 'rafamadriz/friendly-snippets' },
         }
     }
-    
+
     use({
         "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
         as = "lsp_lines",
@@ -76,5 +78,4 @@ return require('packer').startup(function(use)
             require("lsp_lines").setup()
         end,
     })
-
 end)

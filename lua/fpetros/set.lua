@@ -1,4 +1,9 @@
-vim.opt.guifont = 'CaskaydiaCove Nerd Font:16'
+local env_config = require('fpetros.env-config')
+
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+vim.opt.guifont = env_config.gui_font
 
 vim.opt.guicursor = ""
 vim.o.mouse = "a"
