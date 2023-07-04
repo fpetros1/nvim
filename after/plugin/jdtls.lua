@@ -154,9 +154,10 @@ config['on_attach'] = function(client, bufnr)
     local opts_jdtls = { buffer = bufnr, silent = true, noremap = true }
 
     vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts_lsp)
+    vim.keymap.set("n", "gi", function() vim.lsp.buf.implementation() end, opts_lsp)
     vim.keymap.set("n", "gD", function() vim.lsp.buf.declaration() end, opts_lsp)
     vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts_lsp)
-    vim.keymap.set("n", "<leader>ws", function() vim.lsp.buf.workspace_symbol() end, opts_lsp)
+    vim.keymap.set("n", "<leader>ww", function() vim.lsp.buf.workspace_symbol() end, opts_lsp)
     vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts_lsp)
     vim.keymap.set("n", "<leader>nd", function() vim.diagnostic.goto_next() end, opts_lsp)
     vim.keymap.set("n", "<leader>Nd", function() vim.diagnostic.goto_prev() end, opts_lsp)
