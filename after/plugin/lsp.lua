@@ -1,6 +1,13 @@
 local lsp = require("lsp-zero")
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+local cmp = require('cmp')
+local types = require("cmp.types")
+local str = require("cmp.utils.str")
+local lspkind = require('lspkind')
 
 lsp.preset("recommended")
+
+lsp.on_attach()
 
 lsp.ensure_installed({
     'jdtls',
@@ -47,6 +54,7 @@ lsp.on_attach(function(client, bufnr)
     vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
 end)
 
+
 lsp.format_on_save({
     format_opts = {
         async = true,
@@ -66,8 +74,6 @@ lsp.skip_server_setup({ 'jdtls' })
 
 lsp.setup()
 
---vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
-
 vim.diagnostic.config({
     virtual_text = false,
     virtual_lines = {
@@ -78,9 +84,40 @@ vim.diagnostic.config({
 
 require("lsp_lines").setup()
 
-local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-local cmp = require('cmp')
 cmp.event:on(
     'confirm_done',
     cmp_autopairs.on_confirm_done()
 )
+
+cmp.setup({
+    formatting = {
+        fields = {
+            cmp.ItemField.Kind,
+            cmp.ItemField.Abbr,
+            cmp.ItemField.Menu,
+        },
+        format = lspkind.cmp_format({
+            mode = 'symbol_text',
+            maxwidth = function() return math.floor(0.45 * vim.o.columns) end,
+            before = function(entry, vim_item)
+                -- Get the full snippet (and only keep first line)
+                local word = entry:get_insert_text()
+                if entry.completion_item.insertTextFormat == types.lsp.InsertTextFormat.Snippet then
+                    word = vim.lsp.util.parse_snippet(word)
+                end
+
+                word = str.oneline(word)
+
+                if
+                    entry.completion_item.insertTextFormat == types.lsp.InsertTextFormat.Snippet
+                    and string.sub(vim_item.abbr, -1, -1) == "~"
+                then
+                    word = word .. "~"
+                end
+                vim_item.abbr = word
+
+                return vim_item
+            end,
+        }),
+    }
+})

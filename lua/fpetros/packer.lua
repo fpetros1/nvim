@@ -18,6 +18,8 @@ return require('packer').startup(function(use)
 
     use { "akinsho/toggleterm.nvim", tag = '*' }
 
+    use { "onsails/lspkind.nvim" }
+
     use {
         'nvimdev/dashboard-nvim',
         as = "dashboard",
