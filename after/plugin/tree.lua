@@ -1,4 +1,9 @@
 require 'nvim-tree'.setup({
+    view = {
+        width = {
+            min = 40
+        },
+    },
     update_focused_file = {
         enable = true,
         update_root = false,

@@ -1,5 +1,23 @@
 return {
-    java_runtimes = {
+    java = {
+        runtimes = {
+            {
+                name = "",
+                path = "",
+                default = false,
+            }
+        },
+        lsp_java_home = "",
+        lombok = {
+            enabled = false,
+            jar = ""
+        },
+        google_java_format = {
+            enabled = false,
+            jar = ""
+        }
     },
-    gui_font = ""
+    gui = {
+        font = "font:size",
+    }
 }

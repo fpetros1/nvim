@@ -43,6 +43,7 @@ lsp.on_attach(function(client, bufnr)
     vim.keymap.set("n", "<leader>ca", function() vim.lsp.buf.code_action() end, opts)
     vim.keymap.set("n", "<leader>rr", function() vim.lsp.buf.references() end, opts)
     vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end, opts)
+    vim.keymap.set("n", "<leader>ff", function() vim.lsp.buf.format() end, opts)
     vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
 end)
 
@@ -53,7 +54,6 @@ lsp.format_on_save({
     },
     servers = {
         ['lua_ls'] = { 'lua' },
-        ['jdtls'] = { 'java' },
         ['tsserver'] = { 'ts', 'js', 'typescript', 'javascript' },
         ['bashls'] = { 'bash', 'sh', 'shell' },
         ['jsonls'] = { 'json' },
@@ -77,3 +77,10 @@ vim.diagnostic.config({
 })
 
 require("lsp_lines").setup()
+
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+local cmp = require('cmp')
+cmp.event:on(
+    'confirm_done',
+    cmp_autopairs.on_confirm_done()
+)

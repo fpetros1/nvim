@@ -6,6 +6,8 @@ return require('packer').startup(function(use)
         requires = { { 'nvim-lua/plenary.nvim' } }
     }
 
+    use { 'nvim-telescope/telescope-ui-select.nvim' }
+
     use {
         'kyazdani42/nvim-tree.lua',
         requires = {
@@ -14,6 +16,20 @@ return require('packer').startup(function(use)
         config = function() require 'nvim-tree'.setup {} end
     }
 
+    use { "akinsho/toggleterm.nvim", tag = '*' }
+
+    use {
+        'nvimdev/dashboard-nvim',
+        as = "dashboard",
+        event = 'VimEnter',
+        requires = { 'nvim-tree/nvim-web-devicons' }
+    }
+
+    use {
+        "windwp/nvim-autopairs"
+    }
+
+    use { 'rebelot/kanagawa.nvim' }
 
     use {
         'nvim-lualine/lualine.nvim',
@@ -70,6 +86,14 @@ return require('packer').startup(function(use)
             { 'rafamadriz/friendly-snippets' },
         }
     }
+
+    use({
+        "folke/noice.nvim",
+        requires = {
+            "MunifTanjim/nui.nvim",
+            "rcarriga/nvim-notify",
+        }
+    })
 
     use({
         "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
