@@ -26,3 +26,5 @@ require('dashboard').setup {
         }
     }
 }
+
+vim.keymap.set('n', '<leader>dg', '<cmd>Dashboard<cr>')

@@ -21,6 +21,15 @@ return require('packer').startup(function(use)
     use { "onsails/lspkind.nvim" }
 
     use {
+        "folke/which-key.nvim",
+        config = function()
+            vim.o.timeout = true
+            vim.o.timeoutlen = 300
+            require("which-key").setup {}
+        end
+    }
+
+    use {
         'nvimdev/dashboard-nvim',
         as = "dashboard",
         event = 'VimEnter',

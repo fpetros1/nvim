@@ -1,7 +1,7 @@
 require 'nvim-tree'.setup({
     view = {
         width = {
-            min = 40
+            min = 30
         },
     },
     update_focused_file = {

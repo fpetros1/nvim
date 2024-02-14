@@ -5,6 +5,15 @@ local types = require("cmp.types")
 local str = require("cmp.utils.str")
 local lspkind = require('lspkind')
 
+require('nvim-autopairs').setup({
+    disable_filetype = { "TelescopePrompt", "vim" },
+})
+
+cmp.event:on(
+    'confirm_done',
+    cmp_autopairs.on_confirm_done()
+)
+
 lsp.preset("recommended")
 
 lsp.on_attach()
@@ -83,11 +92,6 @@ vim.diagnostic.config({
 })
 
 require("lsp_lines").setup()
-
-cmp.event:on(
-    'confirm_done',
-    cmp_autopairs.on_confirm_done()
-)
 
 cmp.setup({
     formatting = {
