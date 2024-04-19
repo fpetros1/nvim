@@ -1,88 +1,72 @@
-return require('packer').startup(function(use)
-    use 'wbthomason/packer.nvim'
-
-    use {
-        'nvim-telescope/telescope.nvim',
-        requires = { { 'nvim-lua/plenary.nvim' } }
-    }
-
-    use { 'nvim-telescope/telescope-ui-select.nvim' }
-
-    use {
+require("lazy").setup({
+    { 'nvim-telescope/telescope.nvim', dependencies = { { 'nvim-lua/plenary.nvim' } } },
+    'nvim-telescope/telescope-ui-select.nvim',
+    {
         'kyazdani42/nvim-tree.lua',
-        requires = {
+        dependencies = {
             'kyazdani42/nvim-web-devicons', -- optional, for file icon
         },
         config = function() require 'nvim-tree'.setup {} end
-    }
-
-    use { "akinsho/toggleterm.nvim", tag = '*' }
-
-    use { "onsails/lspkind.nvim" }
-
-    use { "lewis6991/gitsigns.nvim" }
-
-    use {
+    },
+    { "akinsho/toggleterm.nvim" },
+    "onsails/lspkind.nvim",
+    "lewis6991/gitsigns.nvim",
+    {
         "folke/which-key.nvim",
         config = function()
             vim.o.timeout = true
             vim.o.timeoutlen = 300
             require("which-key").setup {}
         end
-    }
-
-    use {
+    },
+    {
         'nvimdev/dashboard-nvim',
         as = "dashboard",
         event = 'VimEnter',
-        requires = { 'nvim-tree/nvim-web-devicons' }
-    }
-
-    use {
-        "windwp/nvim-autopairs"
-    }
-
-    use { 'rebelot/kanagawa.nvim' }
-
-    use {
+        dependencies = { 'nvim-tree/nvim-web-devicons' }
+    },
+    {
+        "windwp/nvim-autopairs",
+        dependencies = {
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-path',
+            'hrsh7th/cmp-cmdline',
+            'hrsh7th/nvim-cmp'
+        }
+    },
+    'rebelot/kanagawa.nvim',
+    {
         'nvim-lualine/lualine.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
-    }
-
-    use { "catppuccin/nvim", as = "catppuccin" }
-
-    use { 'mfussenegger/nvim-jdtls' }
-
-    use { 'glepnir/dashboard-nvim' }
-
-    use { 'xiyaowong/transparent.nvim' }
-
-    use {
+        dependencies = { 'kyazdani42/nvim-web-devicons', opt = true }
+    },
+    { "catppuccin/nvim", as = "catppuccin" },
+    'mfussenegger/nvim-jdtls',
+    'xiyaowong/transparent.nvim',
+    {
         'nvim-treesitter/nvim-treesitter',
         run = function()
             local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
             ts_update()
-        end, }
-    use("nvim-treesitter/playground")
-    use("theprimeagen/harpoon")
-    use("theprimeagen/refactoring.nvim")
-    use("mbbill/undotree")
-    use("tpope/vim-fugitive")
-    use("nvim-treesitter/nvim-treesitter-context");
-
-
-    use {
+        end,
+    },
+    "nvim-treesitter/playground",
+    "theprimeagen/harpoon",
+    "theprimeagen/refactoring.nvim",
+    "mbbill/undotree",
+    "tpope/vim-fugitive",
+    "nvim-treesitter/nvim-treesitter-context",
+    {
         "folke/lsp-trouble.nvim",
-        requires = "kyazdani42/nvim-web-devicons",
+        dependencies = "kyazdani42/nvim-web-devicons",
         config = function()
             require("trouble").setup {}
         end
-    }
-
-    use {
+    },
+    {
         'VonHeikemen/lsp-zero.nvim',
         branch = 'v1.x',
-        requires = {
+        dependencies = {
             -- LSP Support
             { 'neovim/nvim-lspconfig' },
             { 'williamboman/mason.nvim' },
@@ -100,21 +84,19 @@ return require('packer').startup(function(use)
             { 'L3MON4D3/LuaSnip' },
             { 'rafamadriz/friendly-snippets' },
         }
-    }
-
-    use({
+    },
+    {
         "folke/noice.nvim",
-        requires = {
+        dependencies = {
             "MunifTanjim/nui.nvim",
             "rcarriga/nvim-notify",
         }
-    })
-
-    use({
+    },
+    {
         "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
         as = "lsp_lines",
         config = function()
             require("lsp_lines").setup()
         end,
-    })
-end)
+    }
+})
