@@ -222,7 +222,7 @@ vim.api.nvim_create_autocmd('FileType', {
 
                     vim.cmd('echo "File was formatted, Reloading..."')
 
-                    vim.cmd("e " .. vim.api.nvim_buf_get_name(0))
+                    vim.cmd("checktime")
                 end
 
                 vim.keymap.set("n", "<leader>fm", format_code_using_google, opts_lsp)

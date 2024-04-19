@@ -20,6 +20,8 @@ return require('packer').startup(function(use)
 
     use { "onsails/lspkind.nvim" }
 
+    use { "lewis6991/gitsigns.nvim" }
+
     use {
         "folke/which-key.nvim",
         config = function()
@@ -52,6 +54,8 @@ return require('packer').startup(function(use)
     use { 'mfussenegger/nvim-jdtls' }
 
     use { 'glepnir/dashboard-nvim' }
+
+    use { 'xiyaowong/transparent.nvim' }
 
     use {
         'nvim-treesitter/nvim-treesitter',

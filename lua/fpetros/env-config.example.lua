@@ -19,5 +19,9 @@ return {
     },
     gui = {
         font = "font:size",
+    },
+    neovide_transparency = {
+        enabled = true,
+        value = 0.9
     }
 }
