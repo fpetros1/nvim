@@ -1,4 +1,4 @@
-require("noice").setup({
+local config = {
     lsp = {
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
         override = {
@@ -20,4 +20,71 @@ require("noice").setup({
         inc_rename = false,           -- enables an input dialog for inc-rename.nvim
         lsp_doc_border = true,        -- add a border to hover docs and signature help
     },
-})
+}
+
+if vim.g.neovide then
+    config.views = {
+        notify = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        split = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        vsplit = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        popup = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        mini = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        cmdline = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        cmdline_popup = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        cmdline_output = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        messages = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        confirm = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        hover = {
+            win_options = {
+                winblend = 100
+            }
+        },
+        popupmenu = {
+            win_options = {
+                winblend = 100
+            }
+        },
+    }
+end
+
+require("noice").setup(config)

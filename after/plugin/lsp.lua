@@ -93,7 +93,16 @@ vim.diagnostic.config({
 
 require("lsp_lines").setup()
 
-cmp.setup({
+local cmpConfig = {
+    window = {
+        completion = {
+            border = "rounded",
+        },
+        documentation = {
+            border = "rounded",
+        }
+    },
+
     formatting = {
         fields = {
             cmp.ItemField.Kind,
@@ -124,4 +133,11 @@ cmp.setup({
             end,
         }),
     }
-})
+}
+
+if vim.g.neovide then
+    cmpConfig.window.completion.winblend = 100
+    cmpConfig.window.documentation.winblend = 100
+end
+
+cmp.setup(cmpConfig)

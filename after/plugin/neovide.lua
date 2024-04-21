@@ -6,6 +6,11 @@ if not vim.g.neovide then
     return
 end
 
+vim.cmd("let g:neovide_padding_bottom=15")
+vim.cmd("let g:neovide_padding_top=15")
+vim.cmd("let g:neovide_padding_left=15")
+vim.cmd("let g:neovide_padding_right=15")
+
 if not env_config.neovide then
     return
 end

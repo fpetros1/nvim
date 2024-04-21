@@ -3,6 +3,8 @@ local env_config = require('fpetros.env-config')
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+vim.opt.fillchars:append { eob = " " }
+
 vim.opt.guifont = env_config.gui.font
 
 vim.opt.guicursor = ""
@@ -39,4 +41,10 @@ vim.opt.isfname:append("@-@")
 vim.opt.updatetime = 100
 vim.opt.autoread = true
 
-vim.opt.colorcolumn = "100"
+vim.opt.colorcolumn = "0"
+
+vim.filetype.add {
+    pattern = {
+        ['.*/hypr/.*%.conf'] = 'hyprlang',
+    },
+}
