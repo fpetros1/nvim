@@ -1,4 +1,15 @@
 -- Default options:
+
+vim.opt.fillchars:append({
+    horiz = '━',
+    horizup = '┻',
+    horizdown = '┳',
+    vert = '┃',
+    vertleft = '┨',
+    vertright = '┣',
+    verthoriz = '╋',
+})
+
 require('kanagawa').setup({
     compile = false,  -- enable compiling the colorscheme
     undercurl = true, -- enable undercurls
@@ -12,10 +23,12 @@ require('kanagawa').setup({
     terminalColors = true, -- define vim.g.terminal_color_{0,17}
     colors = {             -- add/modify theme and palette colors
         palette = {},
-        theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
+        theme = { wave = {}, lotus = {}, dragon = {}, all = { ui = { bg_gutter = "none" } } },
     },
     overrides = function(colors) -- add/modify highlights
-        return {}
+        return {
+            WinSeparator = { fg = colors.palette.dragonBlue }
+        }
     end,
     theme = "wave",    -- Load "wave" theme when 'background' option is not set
     background = {     -- map the value of 'background' option to a theme
