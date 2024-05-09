@@ -10,6 +10,10 @@ end
 
 local open_github = browser_cmd .. ' https://github.com/fpetros1'
 
+local action = function(path)
+    vim.cmd('e ' .. path)
+end
+
 require('dashboard').setup {
     config = {
         shortcut = {
@@ -18,7 +22,7 @@ require('dashboard').setup {
         week_header = {
             enable = true
         },
-        project = { enable = true, action = 'Telescope find_files cwd=' },
+        project = { enable = true, action = action },
         footer = {
             "",
             "",
