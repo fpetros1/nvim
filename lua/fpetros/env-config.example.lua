@@ -18,10 +18,15 @@ return {
         }
     },
     gui = {
-        font = "font:size",
+        font = "undefined:style=Regular:h15",
     },
-    neovide_transparency = {
-        enabled = true,
-        value = 0.9
+    neovide = {
+        transparency = {
+            enabled = true,
+            value = 0.85
+        },
+        background = {
+            enabled = true
+        }
     }
 }

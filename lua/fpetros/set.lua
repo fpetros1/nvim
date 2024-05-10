@@ -6,6 +6,7 @@ vim.g.loaded_netrwPlugin = 1
 vim.opt.fillchars:append { eob = " " }
 
 vim.opt.guifont = env_config.gui.font
+vim.opt.linespace = env_config.gui.linespace
 
 vim.opt.guicursor = ""
 vim.o.mouse = "a"
