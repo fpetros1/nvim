@@ -9,13 +9,14 @@ require("transparent").setup({ -- Optional, you don't have to run setup.
         'EndOfBuffer',
     },
     extra_groups = {
-        "Pmenu"
+        "Pmenu",
     },
     exclude_groups = {
     }, -- table: groups you don't want to clear
 });
 
 require("transparent").clear_prefix("Telescope")
+require("transparent").clear_prefix("Harpoon")
 require("transparent").clear_prefix("Git")
 require("transparent").clear_prefix("Float")
 require("transparent").clear_prefix("Lua")
