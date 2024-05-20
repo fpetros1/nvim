@@ -1,6 +1,10 @@
 local config = {
     messages = {
-        view_error = "popup"
+        view = "notify",
+        view_error = "cmdline",
+        view_warn = "notify",
+        view_history = "messages",
+        view_search = "virtualtext"
     },
     lsp = {
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
@@ -91,3 +95,5 @@ if vim.g.neovide then
 end
 
 require("noice").setup(config)
+
+vim.keymap.set('n', '<leader>cc', function() vim.cmd('NoiceDismiss') end, { desc = "Dismiss Warnings/Errors" })
