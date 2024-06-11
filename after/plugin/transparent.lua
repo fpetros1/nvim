@@ -12,6 +12,7 @@ require("transparent").setup({ -- Optional, you don't have to run setup.
         "Pmenu",
     },
     exclude_groups = {
+        "Noice"
     }, -- table: groups you don't want to clear
 });
 
