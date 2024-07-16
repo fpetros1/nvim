@@ -29,6 +29,8 @@ vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><
 options = { noremap = true }
 
 -- Change panes on vim leader mappings
+vim.api.nvim_set_keymap("n", "<leader>o", '<C-o>', options)
+
 vim.api.nvim_set_keymap("n", "<leader>p", 'A<C-r><C-o>+<ESC>', options)
 vim.api.nvim_set_keymap("n", "<leader>P", 'I<C-r><C-o>+<ESC>', options)
 vim.api.nvim_set_keymap("v", "<leader>p", 'A<C-r><C-o>+<ESC>', options)
