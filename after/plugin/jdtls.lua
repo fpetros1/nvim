@@ -204,7 +204,7 @@ vim.api.nvim_create_autocmd('FileType', {
                         return
                     end
 
-                    local cmd = {
+                    local cmd           = {
                         env_config.java.lsp_java_home .. '/bin/' .. java_executable,
                         "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
                         "--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
@@ -216,19 +216,25 @@ vim.api.nvim_create_autocmd('FileType', {
                         '"' .. vim.api.nvim_buf_get_name(0) .. '"'
                     }
 
-                    local full_cmd = table.concat(cmd, " ")
+                    local full_cmd      = table.concat(cmd, " ")
+                    local fileHandle    = assert(io.popen(full_cmd, 'r'))
+                    local commandOutput = assert(fileHandle:read('*a'))
+                    local lineTable     = {}
 
-                    os.execute(full_cmd)
+                    for line in string.gmatch(commandOutput, "([^\n]*)\n?") do
+                        table.insert(lineTable, line)
+                    end
 
-                    vim.cmd('echo "File was formatted, Reloading..."')
+                    vim.api.nvim_buf_set_lines(0, 0, 999999, false, lineTable)
 
-                    vim.cmd("checktime")
+                    --os.execute(full_cmd)
+                    --vim.cmd('echo "File was formatted, Reloading..."')
+                    --vim.cmd("checktime")
                 end
 
                 vim.keymap.set("n", "<leader>fm", format_code_using_google, opts_lsp)
                 vim.keymap.set("v", "<leader>fm", format_code_using_google, opts_lsp)
-
-                vim.api.nvim_create_autocmd('BufWritePost', {
+                vim.api.nvim_create_autocmd('BufWritePre', {
                     group = java_cmds,
                     pattern = { '*.java' },
                     desc = 'Format java file using Google Format',
