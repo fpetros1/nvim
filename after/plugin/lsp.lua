@@ -1,51 +1,16 @@
+require('mason').setup({})
+local mason_lspconfig = require('mason-lspconfig')
 local lsp = require("lsp-zero")
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 local cmp = require('cmp')
+local cmp_action = lsp.cmp_action()
 local types = require("cmp.types")
 local str = require("cmp.utils.str")
 local lspkind = require('lspkind')
 
-require('nvim-autopairs').setup({
-    disable_filetype = { "TelescopePrompt", "vim" },
-})
+local lsp_attach = function(client, bufnr)
+    lsp.default_keymaps({ buffer = bufnr })
 
-cmp.event:on(
-    'confirm_done',
-    cmp_autopairs.on_confirm_done()
-)
-
-lsp.preset("recommended")
-
-lsp.on_attach()
-
-lsp.ensure_installed({
-    'jdtls',
-    'tsserver',
-    'rust_analyzer',
-    'bashls',
-    'lua_ls',
-    'jsonls',
-    'pylsp'
-})
-
--- Fix Undefined global 'vim'
-lsp.nvim_workspace()
-
-lsp.setup_nvim_cmp({
-    mapping = lsp.defaults.cmp_mappings
-})
-
-lsp.set_preferences({
-    suggest_lsp_servers = false,
-    sign_icons = {
-        error = 'E',
-        warn = 'W',
-        hint = 'H',
-        info = 'I'
-    }
-})
-
-lsp.on_attach(function(client, bufnr)
     local opts = { buffer = bufnr, remap = false }
 
     vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
@@ -61,8 +26,46 @@ lsp.on_attach(function(client, bufnr)
     vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end, opts)
     vim.keymap.set("n", "<leader>ff", function() vim.lsp.buf.format() end, opts)
     vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
-end)
+end
 
+require('nvim-autopairs').setup({
+    disable_filetype = { "TelescopePrompt", "vim" },
+})
+
+cmp.event:on(
+    'confirm_done',
+    cmp_autopairs.on_confirm_done()
+)
+
+mason_lspconfig.setup({
+    ensure_installed = {
+        'jdtls',
+        'ts_ls',
+        'rust_analyzer',
+        'bashls',
+        'lua_ls',
+        'jsonls',
+        'pylsp'
+    },
+    handlers = {
+        function(server_name)
+            require('lspconfig')[server_name].setup({})
+        end,
+        jdtls = lsp.noop,
+    }
+})
+
+lsp.extend_lspconfig({
+    capabilities = require('cmp_nvim_lsp').default_capabilities(),
+    lsp_attach = lsp_attach,
+    float_border = 'rounded',
+    sign_text = {
+        error = '✘',
+        warn = '▲',
+        hint = '⚑',
+        info = ''
+    },
+})
 
 lsp.format_on_save({
     format_opts = {
@@ -79,8 +82,6 @@ lsp.format_on_save({
     }
 })
 
-lsp.skip_server_setup({ 'jdtls' })
-
 lsp.setup()
 
 vim.diagnostic.config({
@@ -94,6 +95,9 @@ vim.diagnostic.config({
 require("lsp_lines").setup()
 
 local cmpConfig = {
+    sources = {
+        { name = 'nvim_lsp' },
+    },
     window = {
         completion = {
             border = "rounded",
@@ -102,7 +106,20 @@ local cmpConfig = {
             border = "rounded",
         }
     },
+    mapping = cmp.mapping.preset.insert({
+        ['<CR>'] = cmp.mapping.confirm({ select = true }),
 
+        ['<C-e>'] = cmp_action.toggle_completion(),
+
+        ['<Tab>'] = cmp_action.tab_complete(),
+        ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+
+        ['<C-d>'] = cmp_action.luasnip_jump_forward(),
+        ['<C-b>'] = cmp_action.luasnip_jump_backward(),
+
+        ['<C-f>'] = cmp.mapping.scroll_docs(-5),
+        ['<C-d>'] = cmp.mapping.scroll_docs(5),
+    }),
     formatting = {
         fields = {
             cmp.ItemField.Kind,
