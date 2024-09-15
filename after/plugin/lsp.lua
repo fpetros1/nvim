@@ -78,7 +78,8 @@ lsp.format_on_save({
         ['bashls'] = { 'bash', 'sh', 'shell' },
         ['jsonls'] = { 'json' },
         ['rust_analyzer'] = { 'rust' },
-        ['pylsp'] = { 'python' }
+        ['pylsp'] = { 'python' },
+        ['gopls'] = { 'go' }
     }
 })
 
@@ -114,9 +115,6 @@ local cmpConfig = {
         ['<Tab>'] = cmp_action.tab_complete(),
         ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
-        ['<C-d>'] = cmp_action.luasnip_jump_forward(),
-        ['<C-b>'] = cmp_action.luasnip_jump_backward(),
-
         ['<C-f>'] = cmp.mapping.scroll_docs(-5),
         ['<C-d>'] = cmp.mapping.scroll_docs(5),
     }),
@@ -132,10 +130,6 @@ local cmpConfig = {
             before = function(entry, vim_item)
                 -- Get the full snippet (and only keep first line)
                 local word = entry:get_insert_text()
-                if entry.completion_item.insertTextFormat == types.lsp.InsertTextFormat.Snippet then
-                    word = vim.lsp.util.parse_snippet(word)
-                end
-
                 word = str.oneline(word)
 
                 if
