@@ -36,11 +36,13 @@ require("lazy").setup({
         }
     },
     'rebelot/kanagawa.nvim',
+    --{ 'romgrk/doom-one.vim', as = "doom-one" },
+    { 'NTBBloodbath/doom-one.nvim', as = "doom-one" },
     {
         'nvim-lualine/lualine.nvim',
         dependencies = { 'kyazdani42/nvim-web-devicons', opt = true }
     },
-    { "catppuccin/nvim", as = "catppuccin" },
+    { "catppuccin/nvim",            as = "catppuccin" },
     'mfussenegger/nvim-jdtls',
     'xiyaowong/transparent.nvim',
     {

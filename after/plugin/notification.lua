@@ -1,8 +1,8 @@
 local notify = require("notify")
 
 notify.setup({
-    background_colour = "NotifyBackground",
-    fps = 15,
+    background_colour = "#000000",
+    fps = 30,
     max_width = function() return math.floor(0.25 * vim.o.columns) end,
     icons = {
         DEBUG = "",
