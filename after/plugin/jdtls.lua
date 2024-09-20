@@ -204,7 +204,9 @@ vim.api.nvim_create_autocmd('FileType', {
                         return
                     end
 
-                    local cmd           = {
+                    local tmp_name   = os.tmpname()
+
+                    local cmd        = {
                         env_config.java.lsp_java_home .. '/bin/' .. java_executable,
                         "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
                         "--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
@@ -213,23 +215,24 @@ vim.api.nvim_create_autocmd('FileType', {
                         "--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
                         "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
                         "-jar " .. jar,
-                        '"' .. vim.api.nvim_buf_get_name(0) .. '"'
+                        "> " .. tmp_name
                     }
 
-                    local full_cmd      = table.concat(cmd, " ")
-                    local fileHandle    = assert(io.popen(full_cmd, 'r'))
-                    local commandOutput = assert(fileHandle:read('*a'))
-                    local lineTable     = {}
+                    local full_cmd   = table.concat(cmd, " ")
 
-                    for line in string.gmatch(commandOutput, "([^\n]*)\n?") do
+                    local fileHandle = assert(io.popen(full_cmd, 'w'))
+                    fileHandle:write(table.concat(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), "\n"))
+                    fileHandle:close()
+
+                    local lineTable = {}
+
+                    for line in io.lines(tmp_name) do
                         table.insert(lineTable, line)
                     end
 
-                    vim.api.nvim_buf_set_lines(0, 0, 999999, false, lineTable)
+                    vim.api.nvim_buf_set_lines(0, 0, -1, false, lineTable)
 
-                    --os.execute(full_cmd)
-                    --vim.cmd('echo "File was formatted, Reloading..."')
-                    --vim.cmd("checktime")
+                    os.remove(tmp_name)
                 end
 
                 vim.keymap.set("n", "<leader>fm", format_code_using_google, opts_lsp)

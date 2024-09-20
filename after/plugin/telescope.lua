@@ -3,7 +3,7 @@ local builtin = require('telescope.builtin')
 
 local config = {
     defaults = {
-        layout_strategy = 'horizontal',
+        layout_strategy = 'vertical',
         layout_config = { height = 0.95, width = 0.9 },
         path_display = { "smart" },
     },
