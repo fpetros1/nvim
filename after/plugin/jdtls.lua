@@ -225,12 +225,16 @@ vim.api.nvim_create_autocmd('FileType', {
                     fileHandle:close()
 
                     local lineTable = {}
+                    local lineCount = 0
 
                     for line in io.lines(tmp_name) do
                         table.insert(lineTable, line)
+                        lineCount = lineCount + 1
                     end
 
-                    vim.api.nvim_buf_set_lines(0, 0, -1, false, lineTable)
+                    if lineCount > 0 then
+                        vim.api.nvim_buf_set_lines(0, 0, -1, false, lineTable)
+                    end
 
                     os.remove(tmp_name)
                 end
