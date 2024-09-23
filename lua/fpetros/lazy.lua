@@ -1,5 +1,5 @@
 require("lazy").setup({
-    { 'nvim-telescope/telescope.nvim', dependencies = { { 'nvim-lua/plenary.nvim' } } },
+    --{ 'nvim-telescope/telescope.nvim', dependencies = { { 'nvim-lua/plenary.nvim' } } },
     'nvim-telescope/telescope-ui-select.nvim',
     {
         'kyazdani42/nvim-tree.lua',
@@ -10,6 +10,12 @@ require("lazy").setup({
     },
     { "akinsho/toggleterm.nvim" },
     "onsails/lspkind.nvim",
+    {
+        "fnune/recall.nvim",
+        version = "*",
+        config = function()
+        end
+    },
     "lewis6991/gitsigns.nvim",
     {
         "folke/which-key.nvim",
@@ -18,6 +24,10 @@ require("lazy").setup({
             vim.o.timeoutlen = 300
             require("which-key").setup {}
         end
+    },
+    {
+        "ibhagwan/fzf-lua",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
     },
     {
         'nvimdev/dashboard-nvim',
@@ -42,7 +52,7 @@ require("lazy").setup({
         'nvim-lualine/lualine.nvim',
         dependencies = { 'kyazdani42/nvim-web-devicons', opt = true }
     },
-    { "catppuccin/nvim",            as = "catppuccin" },
+    { "catppuccin/nvim", as = "catppuccin" },
     'mfussenegger/nvim-jdtls',
     'xiyaowong/transparent.nvim',
     {

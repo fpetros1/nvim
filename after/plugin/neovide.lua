@@ -24,4 +24,3 @@ end
 if neovide_config ~= nil and neovide_config.background.enabled then
     vim.cmd("TransparentDisable")
 end
-
