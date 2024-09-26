@@ -1,3 +1,4 @@
+local fzf = require('fzf-lua')
 local env_config = require('fpetros.env-config')
 
 if env_config == nil then
@@ -181,9 +182,15 @@ vim.api.nvim_create_autocmd('FileType', {
             local opts_lsp = { buffer = bufnr, remap = false }
             local opts_jdtls = { buffer = bufnr, silent = true, noremap = true }
 
-            vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts_lsp)
-            vim.keymap.set("n", "gi", function() vim.lsp.buf.implementation() end, opts_lsp)
-            vim.keymap.set("n", "gD", function() vim.lsp.buf.declaration() end, opts_lsp)
+            vim.keymap.set("n", "gd", function() fzf.lsp_definitions({}) end, { desc = "LSP Find Definitions" })
+            vim.keymap.set("n", "gi", function() fzf.lsp_implementations({}) end, { desc = "LSP Find Implementations" })
+            vim.keymap.set("n", "gD", function() fzf.lsp_declarations({}) end, { desc = "LSP Declarations" })
+
+            --vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts_lsp)
+            --vim.keymap.set("n", "gi", function() vim.lsp.buf.implementation() end, opts_lsp)
+            --vim.keymap.set("n", "gD", function() vim.lsp.buf.declaration() end, opts_lsp)
+
+
             vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts_lsp)
             vim.keymap.set("n", "<leader>ww", function() vim.lsp.buf.workspace_symbol() end, opts_lsp)
             vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts_lsp)
@@ -197,7 +204,7 @@ vim.api.nvim_create_autocmd('FileType', {
             local google_java_format_config = env_config.java.google_java_format
 
             if (google_java_format_config ~= nil and google_java_format_config.enabled == true) then
-                local format_code_using_google = function()
+                local format_code_using_google = function(event)
                     local jar = google_java_format_config.jar
 
                     if (jar == nil) then
@@ -221,7 +228,7 @@ vim.api.nvim_create_autocmd('FileType', {
                     local full_cmd   = table.concat(cmd, " ")
 
                     local fileHandle = assert(io.popen(full_cmd, 'w'))
-                    fileHandle:write(table.concat(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), "\n"))
+                    fileHandle:write(table.concat(vim.api.nvim_buf_get_lines(event.buf, 0, -1, false), "\n"))
                     fileHandle:close()
 
                     local lineTable = {}
@@ -233,7 +240,7 @@ vim.api.nvim_create_autocmd('FileType', {
                     end
 
                     if lineCount > 0 then
-                        vim.api.nvim_buf_set_lines(0, 0, -1, false, lineTable)
+                        vim.api.nvim_buf_set_lines(event.buf, 0, -1, false, lineTable)
                     end
 
                     os.remove(tmp_name)
