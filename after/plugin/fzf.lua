@@ -6,7 +6,8 @@ fzf.setup({
     'telescope',
     winopts = {
         preview = {
-            layout = 'vertical'
+            layout = 'vertical',
+            vertical = "up:70%"
         }
     }
 })
