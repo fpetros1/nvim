@@ -10,12 +10,6 @@ require("lazy").setup({
     },
     { "akinsho/toggleterm.nvim" },
     "onsails/lspkind.nvim",
-    {
-        "fnune/recall.nvim",
-        version = "*",
-        config = function()
-        end
-    },
     "lewis6991/gitsigns.nvim",
     {
         "folke/which-key.nvim",

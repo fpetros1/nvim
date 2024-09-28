@@ -1,62 +1,41 @@
-local hasTelescopeConfig, telescopeConfig = pcall(require, 'telescope.config')
-local hasTelescopeActionState, action_state = pcall(require, "telescope.actions.state")
-local hasHarpoon, harpoon = pcall(require, "telescope")
+local hasHarpoon, harpoon = pcall(require, "harpoon")
+local hasFzf, fzf = pcall(require, "fzf-lua")
 
-if hasHarpoon and hasTelescopeConfig and hasTelescopeActionState then
-    local config = telescopeConfig.values
-    local listName = 'main'
-    local actions = {}
+if hasHarpoon and hasFzf then
+    harpoon:setup()
 
-    harpoon:setup({
-        settings = {
-            sync_on_ui_close = false
-        }
-    })
-
-    harpoon:list(listName)
-
-    actions.remove = function(_prompt_bufnr)
-        local picker = action_state.get_current_picker(_prompt_bufnr)
-        if picker ~= nil then
-            local selection = action_state.get_selected_entry()
-            for index, item in ipairs(harpoon:list(listName).items) do
-                if selection.value == item.value then
-                    harpoon:list(listName):remove_at(index)
-                    break
+    vim.keymap.set("n", "<leader>ha", function() harpoon:list():add() end, { desc = "Create Harpoon" })
+    vim.keymap.set("n", "<leader>hh", function()
+            fzf.fzf_exec(function(fzf_cb)
+                for _, item in ipairs(harpoon:list().items) do
+                    fzf_cb(item.value)
                 end
-            end
-            require('telescope.actions').close(_prompt_bufnr)
-            actions.toggle_telescope()
-        end
-    end
+                fzf_cb()
+            end, {
+                previewer = "builtin",
+                actions = {
+                    ['default'] = function(selected)
+                        local _, idx = harpoon:list():get_by_value(selected[1])
+                        harpoon:list():select(idx)
+                    end,
+                    ['ctrl-x'] = {
+                        function(selected)
+                            local _, removeIdx = harpoon:list():get_by_value(selected[1])
+                            local copyList = harpoon:list().items
+                            harpoon:list():clear()
+                            for idx, item in ipairs(copyList) do
+                                if removeIdx ~= idx then
+                                    harpoon:list():add(item)
+                                end
+                            end
+                        end,
+                        fzf.actions.resume
+                    }
+                }
+            })
+        end,
+        { desc = "List Harpoon" })
 
-    actions.create_finder = function()
-        local file_paths = {}
-        for _, item in ipairs(harpoon:list(listName).items) do
-            table.insert(file_paths, item.value)
-        end
-        return require("telescope.pickers").new({}, {
-            prompt_title = "Harpoon",
-            finder = require("telescope.finders").new_table({
-                results = file_paths,
-            }),
-            previewer = config.file_previewer({}),
-            sorter = config.generic_sorter({}),
-            attach_mappings = function(_, map)
-                map("i", "<C-d>", actions.remove)
-                map("n", "<C-d>", actions.remove)
-                return true
-            end
-        })
-    end
-
-    actions.toggle_telescope = function()
-        actions.create_finder():find()
-    end
-
-    vim.keymap.set('n', '<leader>ha', function() harpoon:list(listName):add() end, { desc = "Create Harpoon" })
-    vim.keymap.set('n', '<leader>hn', function() harpoon:list(listName):next() end, { desc = "Next Harpoon" })
-    vim.keymap.set('n', '<leader>hp', function() harpoon:list(listName):prev() end, { desc = "Previous Harpoon" })
-    vim.keymap.set("n", "<leader>hh", function() actions.toggle_telescope() end,
-        { desc = "Open harpoon window" })
+    vim.keymap.set("n", "<leader>hp", function() harpoon:list():prev() end, { desc = "Previous Harpoon" })
+    vim.keymap.set("n", "<leader>hn", function() harpoon:list():next() end, { desc = "Next Harpoon" })
 end
