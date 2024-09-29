@@ -12,6 +12,9 @@ require("lazy").setup({
     "onsails/lspkind.nvim",
     "lewis6991/gitsigns.nvim",
     {
+        'fedepujol/move.nvim'
+    },
+    {
         "folke/which-key.nvim",
         config = function()
             vim.o.timeout = true
@@ -19,7 +22,7 @@ require("lazy").setup({
             require("which-key").setup {}
         end
     },
-    { 'echasnovski/mini.ai', version = '*' },
+    { 'echasnovski/mini.ai',    version = '*' },
     {
         "ibhagwan/fzf-lua",
         dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -47,7 +50,7 @@ require("lazy").setup({
         'nvim-lualine/lualine.nvim',
         dependencies = { 'kyazdani42/nvim-web-devicons', opt = true }
     },
-    { "catppuccin/nvim", as = "catppuccin" },
+    { "catppuccin/nvim",            as = "catppuccin" },
     'mfussenegger/nvim-jdtls',
     'xiyaowong/transparent.nvim',
     {
