@@ -19,6 +19,7 @@ require("lazy").setup({
             require("which-key").setup {}
         end
     },
+    { 'echasnovski/mini.ai', version = '*' },
     {
         "ibhagwan/fzf-lua",
         dependencies = { "nvim-tree/nvim-web-devicons" },
