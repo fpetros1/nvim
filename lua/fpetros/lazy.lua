@@ -14,6 +14,7 @@ require("lazy").setup({
     {
         'fedepujol/move.nvim'
     },
+    { "alexghergh/nvim-tmux-navigation" },
     {
         "folke/which-key.nvim",
         config = function()
