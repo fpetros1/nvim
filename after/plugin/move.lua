@@ -6,4 +6,6 @@ if hasMove then
     local opts = { noremap = false, silent = true }
     vim.keymap.set('n', '<C-Up>', ':MoveLine(-1)<CR>', opts)
     vim.keymap.set('n', '<C-Down>', ':MoveLine(1)<CR>', opts)
+    vim.keymap.set('v', '<C-Up>', ':MoveBlock(-1)<CR>', opts)
+    vim.keymap.set('v', '<C-Down>', ':MoveBlock(1)<CR>', opts)
 end
