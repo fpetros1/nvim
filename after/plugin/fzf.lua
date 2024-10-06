@@ -5,6 +5,8 @@ fzf.register_ui_select()
 fzf.setup({
     'telescope',
     winopts = {
+        height = 0.99,
+        width = 0.99,
         preview = {
             layout = 'vertical',
             vertical = "up:70%"
