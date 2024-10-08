@@ -45,6 +45,18 @@ cmp.event:on(
     cmp_autopairs.on_confirm_done()
 )
 
+lsp.extend_lspconfig({
+    capabilities = require('cmp_nvim_lsp').default_capabilities(),
+    lsp_attach = lsp_attach,
+    float_border = 'rounded',
+    sign_text = {
+        error = '✘',
+        warn = '▲',
+        hint = '⚑',
+        info = ''
+    },
+})
+
 mason_lspconfig.setup({
     ensure_installed = {
         'jdtls',
@@ -61,18 +73,6 @@ mason_lspconfig.setup({
         end,
         jdtls = lsp.noop,
     }
-})
-
-lsp.extend_lspconfig({
-    capabilities = require('cmp_nvim_lsp').default_capabilities(),
-    lsp_attach = lsp_attach,
-    float_border = 'rounded',
-    sign_text = {
-        error = '✘',
-        warn = '▲',
-        hint = '⚑',
-        info = ''
-    },
 })
 
 lsp.format_on_save({
