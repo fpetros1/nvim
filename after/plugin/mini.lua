@@ -8,7 +8,7 @@ end
 
 if has_mini_files then
     mini_files.setup({
-            mappings = {
+        mappings = {
             mark_set = '',
             mark_goto = ''
         },

@@ -10,6 +10,7 @@ require("lazy").setup({
     { 'echasnovski/mini.files',         version = false },
     { 'echasnovski/mini.surround',      version = false },
     { "alexghergh/nvim-tmux-navigation" },
+
     {
         "folke/which-key.nvim",
         config = function()
@@ -46,7 +47,7 @@ require("lazy").setup({
         'nvim-lualine/lualine.nvim',
         dependencies = { 'kyazdani42/nvim-web-devicons', opt = true }
     },
-    { "catppuccin/nvim", as = "catppuccin" },
+    { "catppuccin/nvim",     as = "catppuccin" },
     'mfussenegger/nvim-jdtls',
     'xiyaowong/transparent.nvim',
     {
@@ -96,7 +97,20 @@ require("lazy").setup({
             { 'rafamadriz/friendly-snippets' },
         }
     },
-    {'rcarriga/nvim-notify'},
+    {
+        'saghen/blink.cmp',
+        lazy = false,
+        version = 'v0.2.1',
+        opts = {
+            highlight = {
+                use_nvim_cmp_as_default = true,
+            },
+            nerd_font_variant = 'normal',
+            accept = { auto_brackets = { enabled = true } },
+            trigger = { signature_help = { enabled = true } }
+        }
+    },
+    { 'rcarriga/nvim-notify' },
     {
         "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
         as = "lsp_lines",

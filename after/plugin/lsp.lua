@@ -46,7 +46,7 @@ cmp.event:on(
 )
 
 lsp.extend_lspconfig({
-    capabilities = require('cmp_nvim_lsp').default_capabilities(),
+    --capabilities = require('cmp_nvim_lsp').default_capabilities(),
     lsp_attach = lsp_attach,
     float_border = 'rounded',
     sign_text = {
@@ -159,4 +159,4 @@ if vim.g.neovide then
     cmpConfig.window.documentation.winblend = 100
 end
 
-cmp.setup(cmpConfig)
+--cmp.setup(cmpConfig)
