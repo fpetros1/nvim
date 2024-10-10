@@ -40,7 +40,7 @@ require("lazy").setup({
         dependencies = { 'kyazdani42/nvim-web-devicons', opt = true }
     },
     { "catppuccin/nvim",     as = "catppuccin" },
-    'mfussenegger/nvim-jdtls',
+    'nvim-java/nvim-java',
     'xiyaowong/transparent.nvim',
     {
         'nvim-treesitter/nvim-treesitter',
