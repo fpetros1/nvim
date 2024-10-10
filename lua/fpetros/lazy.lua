@@ -7,7 +7,8 @@ require("lazy").setup({
     {
         'fedepujol/move.nvim'
     },
-    { 'echasnovski/mini.files',         version = false },
+    { 'echasnovski/mini.files', version = false },
+    { 'echasnovski/mini.animate', version = false },
     { 'echasnovski/mini.surround',      version = false },
     { "alexghergh/nvim-tmux-navigation" },
 
