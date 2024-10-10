@@ -7,10 +7,11 @@ require("lazy").setup({
     {
         'fedepujol/move.nvim'
     },
-    { 'echasnovski/mini.files', version = false },
-    { 'echasnovski/mini.animate', version = false },
+    { 'echasnovski/mini.files',         version = false },
+    { 'echasnovski/mini.animate',       version = false },
+    { 'echasnovski/mini.pairs',         version = false },
     { 'echasnovski/mini.surround',      version = false },
-    { 'echasnovski/mini.indentscope',      version = false },
+    { 'echasnovski/mini.indentscope',   version = false },
     { "alexghergh/nvim-tmux-navigation" },
 
     {
@@ -32,18 +33,7 @@ require("lazy").setup({
         event = 'VimEnter',
         dependencies = { 'nvim-tree/nvim-web-devicons' }
     },
-    {
-        "windwp/nvim-autopairs",
-        dependencies = {
-            'hrsh7th/cmp-nvim-lsp',
-            'hrsh7th/cmp-buffer',
-            'hrsh7th/cmp-path',
-            'hrsh7th/cmp-cmdline',
-            'hrsh7th/nvim-cmp'
-        }
-    },
     'rebelot/kanagawa.nvim',
-    --{ 'romgrk/doom-one.vim', as = "doom-one" },
     { 'NTBBloodbath/doom-one.nvim', as = "doom-one" },
     {
         'nvim-lualine/lualine.nvim',
@@ -84,15 +74,6 @@ require("lazy").setup({
             { 'neovim/nvim-lspconfig' },
             { 'williamboman/mason.nvim' },
             { 'williamboman/mason-lspconfig.nvim' },
-
-            -- Autocompletion
-            { 'hrsh7th/nvim-cmp' },
-            { 'hrsh7th/cmp-buffer' },
-            { 'hrsh7th/cmp-path' },
-            { 'saadparwaiz1/cmp_luasnip' },
-            { 'hrsh7th/cmp-nvim-lsp' },
-            { 'hrsh7th/cmp-nvim-lua' },
-
             -- Snippets
             { 'L3MON4D3/LuaSnip' },
             { 'rafamadriz/friendly-snippets' },
@@ -115,9 +96,6 @@ require("lazy").setup({
     { 'rcarriga/nvim-notify' },
     {
         "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
-        as = "lsp_lines",
-        config = function()
-            require("lsp_lines").setup()
-        end,
+        as = "lsp_lines"
     }
 })
