@@ -96,13 +96,7 @@ require("lazy").setup({
             { 'rafamadriz/friendly-snippets' },
         }
     },
-    {
-        "folke/noice.nvim",
-        dependencies = {
-            "MunifTanjim/nui.nvim",
-            "rcarriga/nvim-notify",
-        }
-    },
+    {'rcarriga/nvim-notify'},
     {
         "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
         as = "lsp_lines",
