@@ -10,6 +10,7 @@ require("lazy").setup({
     { 'echasnovski/mini.files', version = false },
     { 'echasnovski/mini.animate', version = false },
     { 'echasnovski/mini.surround',      version = false },
+    { 'echasnovski/mini.indentscope',      version = false },
     { "alexghergh/nvim-tmux-navigation" },
 
     {
