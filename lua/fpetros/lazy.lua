@@ -13,7 +13,12 @@ require("lazy").setup({
     { 'echasnovski/mini.surround',      version = false },
     { 'echasnovski/mini.indentscope',   version = false },
     { "alexghergh/nvim-tmux-navigation" },
-
+    {
+        'VonHeikemen/fine-cmdline.nvim',
+        dependencies = {
+            'MunifTanjim/nui.nvim'
+        }
+    },
     {
         "folke/which-key.nvim",
         config = function()

@@ -42,3 +42,4 @@ vim.api.nvim_set_keymap('n', '<leader>wv', '<C-w>v', options)
 
 -- Toggle Interface
 vim.api.nvim_set_keymap('n', '<C-b>', ':NvimTreeToggle<CR>', options)
+
