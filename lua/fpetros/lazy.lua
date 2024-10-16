@@ -20,6 +20,10 @@ require("lazy").setup({
         }
     },
     {
+        "folke/twilight.nvim",
+        opts = {}
+    },
+    {
         "folke/which-key.nvim",
         config = function()
             vim.o.timeout = true
