@@ -1,20 +1,18 @@
 local has_noice, noice = pcall(require, 'noice')
 
-if has_noice then    
+if has_noice then
     local config = {
         messages = {
             view = "notify",
-            view_error = "cmdline",
+            view_error = "notify",
             view_warn = "notify",
             view_history = "messages",
             view_search = "virtualtext"
         },
         lsp = {
-            -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
             override = {
                 ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
                 ["vim.lsp.util.stylize_markdown"] = true,
-                ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
             },
             progress = {
                 enabled = true,

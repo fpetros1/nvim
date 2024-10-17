@@ -14,9 +14,10 @@ require("lazy").setup({
     { 'echasnovski/mini.indentscope',   version = false },
     { "alexghergh/nvim-tmux-navigation" },
     {
-        'VonHeikemen/fine-cmdline.nvim',
+        'folke/noice.nvim',
         dependencies = {
-            'MunifTanjim/nui.nvim'
+            'MunifTanjim/nui.nvim',
+            'rcarriga/nvim-notify'
         }
     },
     {
