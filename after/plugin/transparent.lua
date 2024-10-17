@@ -6,7 +6,7 @@ require("transparent").setup({ -- Optional, you don't have to run setup.
         'Statement', 'PreProc', 'Type', 'Underlined', 'Todo', 'String', 'Function',
         'Conditional', 'Repeat', 'Operator', 'Structure', 'LineNr', 'NonText',
         'SignColumn', 'CursorLine', 'CursorLineNr', 'StatusLine', 'StatusLineNC',
-        'EndOfBuffer', 'BlinkCmpMenu', 'BlinkCmpDoc', 'BlinkCmpSignatureHelp', 'Noice'
+        'EndOfBuffer', 'BlinkCmpMenu', 'BlinkCmpDoc', 'BlinkCmpSignatureHelp', 'Noice', 'noice_lsp_docs'
     },
     extra_groups = {
         "Pmenu",
@@ -24,4 +24,5 @@ require("transparent").clear_prefix("WhichKey")
 require("transparent").clear_prefix("Mini")
 require("transparent").clear_prefix("Lazy")
 require("transparent").clear_prefix("Mason")
+require("transparent").clear_prefix("Noice")
 

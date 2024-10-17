@@ -100,7 +100,7 @@ require("lazy").setup({
             },
             nerd_font_variant = 'normal',
             accept = { auto_brackets = { enabled = false } },
-            trigger = { signature_help = { enabled = true } }
+            trigger = { signature_help = { enabled = false } }
         }
     },
     { 'rcarriga/nvim-notify' },
