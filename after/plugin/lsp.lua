@@ -137,6 +137,11 @@ mason_lspconfig.setup({
                     }
                 }
             })
+        end,
+        bashls = function()
+            require('lspconfig').bashls.setup({
+                filetypes = { 'sh', 'zsh', 'bash' }
+            })
         end
     }
 })
