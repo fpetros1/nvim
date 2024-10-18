@@ -4,6 +4,7 @@ local lsp = require("lsp-zero")
 local fzf = require('fzf-lua')
 local java = require('java')
 local env_config = require('fpetros.env-config')
+local has_cmp, cmp = pcall(require, 'cmp')
 
 local lsp_attach = function(client, bufnr)
     lsp.default_keymaps({ buffer = bufnr })
@@ -174,3 +175,88 @@ vim.diagnostic.config({
 })
 
 require("lsp_lines").setup()
+
+if has_cmp then
+    local lspkind = require('lspkind')
+    local str = require("cmp.utils.str")
+    local cmp_action = lsp.cmp_action()
+    local types = require("cmp.types")
+    local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+    require('nvim-autopairs').setup({
+        disable_filetype = { "TelescopePrompt", "vim" }
+    })
+
+    cmp.event:on(
+        'confirm_done',
+        cmp_autopairs.on_confirm_done()
+    )
+
+    cmp.setup.cmdline('/', {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+            { name = 'buffer' }
+        }
+    })
+
+    cmp.setup.cmdline(':', {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({
+            { name = 'path' }
+        }, {
+            {
+                name = 'cmdline',
+                option = {
+                    ignore_cmds = { 'Man', '!' }
+                }
+            }
+        })
+    })
+
+    cmp.setup({
+        preselect = 'item',
+        completion = {
+            completeopt = 'menu,menuone,noinsert'
+        },
+        window = {
+            completion = cmp.config.window.bordered(),
+            documentation = cmp.config.window.bordered(),
+        },
+        sources = {
+            { name = 'nvim_lsp', keyword_length = 2 },
+            { name = 'buffer',   keyword_length = 2 },
+            { name = 'path',     keyword_length = 2 },
+        },
+        mapping = cmp.mapping.preset.insert({
+            ['<C-Space>'] = cmp.mapping.complete(),
+            ['<CR>'] = cmp.mapping.confirm({ select = true }),
+            ['<C-e>'] = cmp_action.toggle_completion(),
+            ['<Tab>'] = cmp.mapping.confirm({ select = true }),
+            ['<C-u>'] = cmp.mapping.scroll_docs(-5),
+            ['<C-d>'] = cmp.mapping.scroll_docs(5),
+        }),
+        formatting = {
+            fields = {
+                cmp.ItemField.Kind,
+                cmp.ItemField.Abbr,
+                cmp.ItemField.Menu,
+            },
+            format = lspkind.cmp_format({
+                mode = 'symbol_text',
+                maxwidth = function() return math.floor(0.45 * vim.o.columns) end,
+                ellipsis_char = '...',
+                before = function(entry, vim_item)
+                    local word = entry:get_insert_text()
+                    word = str.oneline(word)
+                    if
+                        entry.completion_item.insertTextFormat == types.lsp.InsertTextFormat.Snippet
+                        and string.sub(vim_item.abbr, -1, -1) == "~"
+                    then
+                        word = word .. "~"
+                    end
+                    vim_item.abbr = word
+                    return vim_item
+                end
+            })
+        }
+    })
+end

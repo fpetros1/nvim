@@ -9,7 +9,6 @@ require("lazy").setup({
     },
     { 'echasnovski/mini.files',         version = false },
     { 'echasnovski/mini.animate',       version = false },
-    { 'echasnovski/mini.pairs',         version = false },
     { 'echasnovski/mini.surround',      version = false },
     { 'echasnovski/mini.indentscope',   version = false },
     { "alexghergh/nvim-tmux-navigation" },
@@ -84,25 +83,28 @@ require("lazy").setup({
             { 'neovim/nvim-lspconfig' },
             { 'williamboman/mason.nvim' },
             { 'williamboman/mason-lspconfig.nvim' },
-            -- Snippets
-            { 'L3MON4D3/LuaSnip' },
-            { 'rafamadriz/friendly-snippets' },
-            { 'rafamadriz/friendly-snippets' },
+            { 'hrsh7th/nvim-cmp' },
+            { 'hrsh7th/cmp-nvim-lsp' },
+            { 'hrsh7th/cmp-buffer' },
+            { 'onsails/lspkind.nvim' },
+            { 'hrsh7th/cmp-path' },
+            { 'hrsh7th/cmp-cmdline' },
+            { 'windwp/nvim-autopairs' },
         }
     },
-    {
-        'saghen/blink.cmp',
-        lazy = false,
-        version = 'v0.2.1',
-        opts = {
-            highlight = {
-                use_nvim_cmp_as_default = false,
-            },
-            nerd_font_variant = 'normal',
-            accept = { auto_brackets = { enabled = false } },
-            trigger = { signature_help = { enabled = false } }
-        }
-    },
+    -- {
+    --     'saghen/blink.cmp',
+    --     lazy = false,
+    --     version = 'v0.2.1',
+    --     opts = {
+    --         highlight = {
+    --             use_nvim_cmp_as_default = false,
+    --         },
+    --         nerd_font_variant = 'normal',
+    --         accept = { auto_brackets = { enabled = false } },
+    --         trigger = { signature_help = { enabled = false } }
+    --     }
+    -- },
     { 'rcarriga/nvim-notify' },
     {
         "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
