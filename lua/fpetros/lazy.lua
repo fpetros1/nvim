@@ -92,6 +92,21 @@ require("lazy").setup({
             { 'windwp/nvim-autopairs' },
         }
     },
+    {
+        "kdheepak/lazygit.nvim",
+        as = 'lazygit',
+        lazy = true,
+        cmd = {
+            "LazyGit",
+            "LazyGitConfig",
+            "LazyGitCurrentFile",
+            "LazyGitFilter",
+            "LazyGitFilterCurrentFile",
+        },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        }
+    },
     -- {
     --     'saghen/blink.cmp',
     --     lazy = false,
