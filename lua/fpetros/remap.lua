@@ -39,7 +39,3 @@ vim.api.nvim_set_keymap('n', '<leader>wl', '<C-w>l', options)
 -- Split with leader
 vim.api.nvim_set_keymap('n', '<leader>ws', '<C-w>s', options)
 vim.api.nvim_set_keymap('n', '<leader>wv', '<C-w>v', options)
-
--- Toggle Interface
-vim.api.nvim_set_keymap('n', '<C-b>', ':NvimTreeToggle<CR>', options)
-

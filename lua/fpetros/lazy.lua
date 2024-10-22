@@ -7,7 +7,7 @@ require("lazy").setup({
     {
         'fedepujol/move.nvim'
     },
-    { 'echasnovski/mini.files',         version = false },
+    --{ 'echasnovski/mini.files',         version = false },
     { 'echasnovski/mini.animate',       version = false },
     { 'echasnovski/mini.surround',      version = false },
     { 'echasnovski/mini.indentscope',   version = false },
@@ -66,6 +66,15 @@ require("lazy").setup({
         end,
     },
     "nvim-treesitter/playground",
+    {
+        "nvim-neo-tree/neo-tree.nvim",
+        branch = "v3.x",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-tree/nvim-web-devicons",
+            "MunifTanjim/nui.nvim",
+        }
+    },
     {
         "ThePrimeagen/harpoon",
         branch = "harpoon2",

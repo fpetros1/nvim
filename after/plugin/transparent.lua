@@ -10,6 +10,11 @@ require("transparent").setup({ -- Optional, you don't have to run setup.
     },
     extra_groups = {
         "Pmenu",
+        "NeoTreeNormal",
+        "NeoTreeNormalNC",
+        "NormalFloat",
+        "NeoTreeTitleBar",
+        "NeoTreeFloatTitle"
     },
     exclude_groups = {
     }, -- table: groups you don't want to clear
@@ -25,4 +30,3 @@ require("transparent").clear_prefix("Mini")
 require("transparent").clear_prefix("Lazy")
 require("transparent").clear_prefix("Mason")
 require("transparent").clear_prefix("Noice")
-
