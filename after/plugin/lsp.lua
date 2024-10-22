@@ -5,6 +5,7 @@ local fzf = require('fzf-lua')
 local java = require('java')
 local env_config = require('fpetros.env-config')
 local has_cmp, cmp = pcall(require, 'cmp')
+local google_java_format = require('fpetros.google-java-format')
 
 local lsp_attach = function(client, bufnr)
     lsp.default_keymaps({ buffer = bufnr })
@@ -28,70 +29,7 @@ local lsp_attach = function(client, bufnr)
     vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
 
     if client.name == 'jdtls' then
-        local java_executable = nil
-
-        if vim.fn.has('mac') == 1 then
-            java_executable = 'java'
-        elseif vim.fn.has('unix') == 1 then
-            java_executable = 'java'
-        elseif vim.fn.has('win32') == 1 then
-            java_executable = 'java.exe'
-        end
-
-        local google_java_format_config = env_config.java.google_java_format
-
-        if (google_java_format_config ~= nil and google_java_format_config.enabled == true) then
-            local format_code_using_google = function(event)
-                local jar = google_java_format_config.jar
-
-                if (jar == nil) then
-                    return
-                end
-
-                local tmp_name   = os.tmpname()
-
-                local cmd        = {
-                    env_config.java.lsp_java_home .. '/bin/' .. java_executable,
-                    "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
-                    "--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
-                    "--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
-                    "--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
-                    "--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
-                    "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
-                    "-jar " .. jar,
-                    "> " .. tmp_name
-                }
-
-                local full_cmd   = table.concat(cmd, " ")
-
-                local fileHandle = assert(io.popen(full_cmd, 'w'))
-                fileHandle:write(table.concat(vim.api.nvim_buf_get_lines(event.buf, 0, -1, false), "\n"))
-                fileHandle:close()
-
-                local lineTable = {}
-                local lineCount = 0
-
-                for line in io.lines(tmp_name) do
-                    table.insert(lineTable, line)
-                    lineCount = lineCount + 1
-                end
-
-                if lineCount > 0 then
-                    vim.api.nvim_buf_set_lines(event.buf, 0, -1, false, lineTable)
-                end
-
-                os.remove(tmp_name)
-            end
-
-            vim.keymap.set("n", "<leader>fm", format_code_using_google, opts)
-            vim.keymap.set("v", "<leader>fm", format_code_using_google, opts)
-            vim.api.nvim_create_autocmd('BufWritePre', {
-                group = java_cmds,
-                pattern = { '*.java' },
-                desc = 'Format java file using Google Format',
-                callback = format_code_using_google,
-            })
-        end
+        google_java_format.setup_formatter(java)
 
         vim.keymap.set("n", "<leader>tt",
             "<cmd>lua require('java').test.run_current_method()<CR>", opts)
