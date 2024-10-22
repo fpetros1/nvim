@@ -24,6 +24,13 @@ require("lazy").setup({
         opts = {}
     },
     {
+        "folke/flash.nvim",
+        event = "VeryLazy",
+        opts = {},
+        keys = {
+        },
+    },
+    {
         "folke/which-key.nvim",
         config = function()
             vim.o.timeout = true
@@ -48,7 +55,7 @@ require("lazy").setup({
         'nvim-lualine/lualine.nvim',
         dependencies = { 'kyazdani42/nvim-web-devicons', opt = true }
     },
-    { "catppuccin/nvim",     as = "catppuccin" },
+    { "catppuccin/nvim",       as = "catppuccin" },
     'nvim-java/nvim-java',
     'xiyaowong/transparent.nvim',
     {
@@ -91,6 +98,12 @@ require("lazy").setup({
             { 'hrsh7th/cmp-cmdline' },
             { 'windwp/nvim-autopairs' },
         }
+    },
+    { "jannis-baum/vivify.vim" },
+    {
+        'MeanderingProgrammer/render-markdown.nvim',
+        dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+        opts = {},
     },
     {
         "kdheepak/lazygit.nvim",
