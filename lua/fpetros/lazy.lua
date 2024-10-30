@@ -67,6 +67,12 @@ require("lazy").setup({
     },
     "nvim-treesitter/playground",
     {
+        "eldritch-theme/eldritch.nvim",
+        lazy = false,
+        priority = 1000,
+        opts = {},
+    },
+    {
         "nvim-neo-tree/neo-tree.nvim",
         branch = "v3.x",
         dependencies = {
