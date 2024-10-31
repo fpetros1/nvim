@@ -1,20 +1,19 @@
 vim.cmd("set pumblend=0")
 
 require("transparent").setup({ -- Optional, you don't have to run setup.
-    groups = {                 -- table: default groups
-        'Normal', 'NormalNC', 'Comment', 'Constant', 'Special', 'Identifier',
-        'Statement', 'PreProc', 'Type', 'Underlined', 'Todo', 'String', 'Function',
-        'Conditional', 'Repeat', 'Operator', 'Structure', 'LineNr', 'NonText',
-        'SignColumn', 'CursorLine', 'CursorLineNr', 'StatusLine', 'StatusLineNC',
-        'EndOfBuffer', 'BlinkCmpMenu', 'BlinkCmpDoc', 'BlinkCmpSignatureHelp', 'Noice', 'noice_lsp_docs'
-    },
     extra_groups = {
         "Pmenu",
         "NeoTreeNormal",
         "NeoTreeNormalNC",
         "NormalFloat",
         "NeoTreeTitleBar",
-        "NeoTreeFloatTitle"
+        "NeoTreeFloatTitle",
+        'BlinkCmpMenu',
+        'BlinkCmpDoc',
+        'BlinkCmpSignatureHelp',
+        'Noice',
+        'noice_lsp_docs',
+        'QuickFixLine'
     },
     exclude_groups = {
     }, -- table: groups you don't want to clear
@@ -30,3 +29,11 @@ require("transparent").clear_prefix("Mini")
 require("transparent").clear_prefix("Lazy")
 require("transparent").clear_prefix("Mason")
 require("transparent").clear_prefix("Noice")
+
+vim.api.nvim_create_autocmd('FileType', {
+    group = vim.api.nvim_create_augroup('transparent', { clear = true }),
+    pattern = 'qf',
+    callback = function()
+        vim.api.nvim_win_set_option(0, 'winhl', 'Normal:dark')
+    end,
+})
