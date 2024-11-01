@@ -60,6 +60,9 @@ require("lazy").setup({
     'xiyaowong/transparent.nvim',
     {
         'nvim-treesitter/nvim-treesitter',
+        dependencies = {
+            { 'nushell/tree-sitter-nu' }
+        },
         run = function()
             local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
             ts_update()
