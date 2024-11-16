@@ -1,5 +1,5 @@
 return {
-    setup_formatter = function()
+    setup_formatter = function(context)
         local env_config = require('fpetros.env-config')
         local java_format_jar = vim.fn.stdpath('data') .. '/google-java-format/google-java-format.jar'
         local java_executable = nil
@@ -15,38 +15,53 @@ return {
         end
 
         local format_code_using_google = function(event)
-            local tmp_name   = os.tmpname()
+            local bufnr = 0
 
-            local cmd        = {
+            if event ~= nil and event.buf ~= nil then
+                bufnr = event.buf
+            end
+
+            local stdin    = table.concat(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), "\n")
+
+            local cmd      = {
+                ('echo \'$stdin\' | '):gsub("$stdin", stdin),
                 env_config.java.lsp_java_home .. '/bin/' .. java_executable,
                 "-jar " .. java_format_jar,
-                "-",
-                "> " .. tmp_name
+                "-"
             }
+            local full_cmd = table.concat(cmd, " ")
+            local prog     = io.popen(full_cmd, "r")
 
-            local full_cmd   = table.concat(cmd, " ")
+            if not prog then
+                vim.notify("Failed to open pipe")
+                return
+            end
 
-            local fileHandle = assert(io.popen(full_cmd, 'w'))
-            fileHandle:write(table.concat(vim.api.nvim_buf_get_lines(event.buf, 0, -1, false), "\n"))
-            fileHandle:close()
-
-            local lineTable = {}
+            local lines = {}
             local lineCount = 0
 
-            for line in io.lines(tmp_name) do
-                table.insert(lineTable, line)
+            while true do
+                local line = prog:read('*l')
+                if not line then break end
+                table.insert(lines, line)
                 lineCount = lineCount + 1
             end
 
-            if lineCount > 0 then
-                vim.api.nvim_buf_set_lines(event.buf, 0, -1, false, lineTable)
+            prog:close()
+
+            if lineCount == 0 then
+                vim.notify("Failed to format using google java format")
+                return
             end
 
-            os.remove(tmp_name)
+            vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
         end
 
-        vim.keymap.set("n", "<leader>fm", format_code_using_google, opts)
-        vim.keymap.set("v", "<leader>fm", format_code_using_google, opts)
+        local opts = { buffer = context.buf, remap = true }
+
+        vim.keymap.set("n", "<leader>ff", format_code_using_google, opts)
+        vim.keymap.set("v", "<leader>ff", format_code_using_google, opts)
+
         vim.api.nvim_create_autocmd('BufWritePre', {
             pattern = { '*.java' },
             desc = 'Format java file using Google Format',

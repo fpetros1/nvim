@@ -29,7 +29,7 @@ local lsp_attach = function(client, bufnr)
     vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
 
     if client.name == 'jdtls' then
-        google_java_format.setup_formatter(java)
+        google_java_format.setup_formatter({ buf = bufnr })
 
         vim.keymap.set("n", "<leader>tt",
             "<cmd>lua require('java').test.run_current_method()<CR>", opts)
