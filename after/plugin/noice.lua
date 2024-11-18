@@ -18,6 +18,9 @@ if has_noice then
                 enabled = true,
                 view = "virtualtext",
                 throttle = 1000, -- frequency to update lsp progress message
+            },
+            signature = {
+                enabled = false
             }
         },
         -- you can enable a preset for easier configuration

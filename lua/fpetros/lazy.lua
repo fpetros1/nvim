@@ -108,14 +108,24 @@ require("lazy").setup({
             { 'neovim/nvim-lspconfig' },
             { 'williamboman/mason.nvim' },
             { 'williamboman/mason-lspconfig.nvim' },
-            { 'hrsh7th/nvim-cmp' },
-            { 'hrsh7th/cmp-nvim-lsp' },
-            { 'hrsh7th/cmp-buffer' },
+            -- { 'hrsh7th/nvim-cmp' },
+            -- { 'hrsh7th/cmp-nvim-lsp' },
+            -- { 'hrsh7th/cmp-buffer' },
             { 'onsails/lspkind.nvim' },
-            { 'hrsh7th/cmp-path' },
-            { 'hrsh7th/cmp-cmdline' },
+            -- { 'hrsh7th/cmp-path' },
+            -- { 'hrsh7th/cmp-cmdline' },
             { 'windwp/nvim-autopairs' },
         }
+    },
+    {
+        'saghen/blink.cmp',
+        lazy = false,
+        as = "blink",
+        dependencies = {
+            'rafamadriz/friendly-snippets',
+            --{ "ray-x/lsp_signature.nvim", event = "VeryLazy" }
+        },
+        version = 'v0.*',
     },
     { "jannis-baum/vivify.vim" },
     {
@@ -138,19 +148,6 @@ require("lazy").setup({
             "nvim-lua/plenary.nvim",
         }
     },
-    -- {
-    --     'saghen/blink.cmp',
-    --     lazy = false,
-    --     version = 'v0.2.1',
-    --     opts = {
-    --         highlight = {
-    --             use_nvim_cmp_as_default = false,
-    --         },
-    --         nerd_font_variant = 'normal',
-    --         accept = { auto_brackets = { enabled = false } },
-    --         trigger = { signature_help = { enabled = false } }
-    --     }
-    -- },
     { 'rcarriga/nvim-notify' },
     {
         "https://git.sr.ht/~whynothugo/lsp_lines.nvim",

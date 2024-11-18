@@ -5,7 +5,13 @@ local fzf = require('fzf-lua')
 local java = require('java')
 local env_config = require('fpetros.env-config')
 local has_cmp, cmp = pcall(require, 'cmp')
+local has_blink, blink = pcall(require, 'blink.cmp')
 local google_java_format = require('fpetros.google-java-format')
+
+-- require('nvim-autopairs').setup({
+--     disable_filetype = { "TelescopePrompt", "vim" }
+-- })
+
 
 local lsp_attach = function(client, bufnr)
     lsp.default_keymaps({ buffer = bufnr })
@@ -40,6 +46,18 @@ local lsp_attach = function(client, bufnr)
     end
 end
 
+if has_blink then
+    blink.setup({
+        keymap = { preset = 'enter' },
+        highlight = {
+            use_nvim_cmp_as_default = true,
+        },
+        nerd_font_variant = 'mono',
+        accept = { auto_brackets = { enabled = true } },
+        trigger = { signature_help = { enabled = true } }
+    })
+end
+
 java.setup({})
 
 lsp.extend_lspconfig({
@@ -64,10 +82,15 @@ mason_lspconfig.setup({
     },
     handlers = {
         function(server_name)
-            require('lspconfig')[server_name].setup({})
+            local server = require('lspconfig')[server_name]
+            local config = {}
+            if has_blink then
+                config.capabilities = blink.get_lsp_capabilities(nil, true)
+            end
+            server.setup(config)
         end,
         jdtls = function()
-            require('lspconfig').jdtls.setup({
+            local config = {
                 settings = {
                     java = {
                         configuration = {
@@ -75,7 +98,11 @@ mason_lspconfig.setup({
                         }
                     }
                 }
-            })
+            }
+            if has_blink then
+                config.capabilities = blink.get_lsp_capabilities(nil, true)
+            end
+            require('lspconfig').jdtls.setup(config)
         end,
         bashls = function()
             require('lspconfig').bashls.setup({
@@ -120,9 +147,6 @@ if has_cmp then
     local cmp_action = lsp.cmp_action()
     local types = require("cmp.types")
     local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-    require('nvim-autopairs').setup({
-        disable_filetype = { "TelescopePrompt", "vim" }
-    })
 
     cmp.event:on(
         'confirm_done',
