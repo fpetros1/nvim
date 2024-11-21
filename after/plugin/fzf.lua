@@ -12,7 +12,8 @@ fzf.setup({
             layout = 'vertical',
             vertical = "up:70%"
         }
-    }
+    },
+    fzf_colors = true
 })
 
 local close_mini_files = function()
