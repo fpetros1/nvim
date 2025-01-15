@@ -4,7 +4,7 @@ local has_mini_files, mini_files = pcall(require, 'mini.files')
 fzf.register_ui_select()
 
 fzf.setup({
-    'telescope',
+    { 'default-title' },
     winopts = {
         height = 0.99,
         width = 0.99,
