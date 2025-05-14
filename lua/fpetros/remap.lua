@@ -21,7 +21,7 @@ vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 
-options = { noremap = true }
+local options = { noremap = true }
 
 -- Change panes on vim leader mappings
 vim.api.nvim_set_keymap("n", "<leader>o", '<C-o>', options)

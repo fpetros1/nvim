@@ -23,3 +23,4 @@ if has_neotree then
     vim.keymap.set('v', '<C-b>', toggle_neotree)
     vim.keymap.set('i', '<C-b>', toggle_neotree)
 end
+

@@ -1,7 +1,17 @@
 require("fpetros.set")
 require("fpetros.remap")
 require("fpetros.lazy")
-
-vim.g.netrw_browse_split = 0
-vim.g.netrw_banner = 0
-vim.g.netrw_winsize = 25
+require("fpetros.notifications")
+require("fpetros.color")
+require("fpetros.line")
+require("fpetros.fzf")
+require("fpetros.filemanager")
+require("fpetros.trouble")
+require("fpetros.mini")
+require("fpetros.noice")
+require("fpetros.tmux-navigation")
+require("fpetros.dashboard")
+require("fpetros.move")
+require("fpetros.terminal")
+require("fpetros.lsp.init")
+require("fpetros.flash")

@@ -1,5 +1,4 @@
 local has_toggle_term, toggle_term = pcall(require, 'toggleterm')
-local has_mini_files, mini_files   = pcall(require, 'mini.files')
 
 if has_toggle_term then
     toggle_term.setup({})
@@ -17,9 +16,6 @@ if has_toggle_term then
     local toggle_term_keybind = '<leader>;'
 
     local exec_toggle_term = function()
-        if has_mini_files then
-            mini_files.close()
-        end
         vim.cmd('ToggleTerm<CR>')
     end
 

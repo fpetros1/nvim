@@ -1,6 +1,6 @@
 vim.cmd("set pumblend=0")
 
-require("transparent").setup({ -- Optional, you don't have to run setup.
+require("transparent").setup({
     extra_groups = {
         "Pmenu",
         "NeoTreeNormal",
@@ -16,7 +16,7 @@ require("transparent").setup({ -- Optional, you don't have to run setup.
         'QuickFixLine'
     },
     exclude_groups = {
-    }, -- table: groups you don't want to clear
+    },
 });
 
 require("transparent").clear_prefix("Telescope")
@@ -37,3 +37,24 @@ vim.api.nvim_create_autocmd('FileType', {
         vim.api.nvim_win_set_option(0, 'winhl', 'Normal:dark')
     end,
 })
+
+require("eldritch").setup({
+    transparent = true,
+    terminal_colors = true,
+    styles = {
+        comments = { italic = true },
+        keywords = { italic = true },
+        functions = {},
+        variables = {},
+        sidebars = "dark",
+        floats = "dark",
+    },
+    sidebars = { "qf", "help" },
+    hide_inactive_statusline = false,
+    dim_inactive = false,
+    lualine_bold = true,
+    on_colors = function(colors) end,
+    on_highlights = function(highlights, colors) end,
+});
+
+vim.cmd("colorscheme eldritch")

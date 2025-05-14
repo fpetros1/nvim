@@ -3,9 +3,7 @@ local has_flash, flash = pcall(require, 'flash')
 if has_flash then
     flash.setup({})
 
-    vim.keymap.set('n', 'f', "")
-    vim.keymap.set('v', 'f', "")
-    vim.keymap.set('n', '<C-f>', function()
+    local flash_func = function()
         flash.jump({
             modes = {
                 search = {
@@ -13,5 +11,9 @@ if has_flash then
                 }
             }
         })
-    end, { desc = "Flash" })
+    end
+
+    vim.keymap.set('n', 'f', flash_func)
+    vim.keymap.set('v', 'f', flash_func)
+    vim.keymap.set('n', '<C-f>', flash_func, { desc = "Flash" })
 end

@@ -1,17 +1,22 @@
+-- Eviline config for lualine
+-- Author: shadmansaleh
+-- Credit: glepnir
 local lualine = require('lualine')
 
+-- Color table for highlights
+-- stylua: ignore
 local colors = {
-    bg       = '#202328',
-    fg       = '#bbc2cf',
-    yellow   = '#ECBE7B',
-    cyan     = '#008080',
+    bg       = '#212337',
+    fg       = '#EBFAFA',
+    yellow   = '#F1FC79',
+    cyan     = '#04D1F9',
     darkblue = '#081633',
-    green    = '#98be65',
-    orange   = '#FF8800',
-    violet   = '#a9a1e1',
-    magenta  = '#c678dd',
+    green    = '#37F499',
+    orange   = '#F7C67F',
+    violet   = '#A9A1E1',
+    magenta  = '#A48CF2',
     blue     = '#51afef',
-    red      = '#ec5f67',
+    red      = '#F16C75',
 }
 
 local conditions = {
@@ -28,15 +33,19 @@ local conditions = {
     end,
 }
 
+-- Config
 local config = {
     options = {
+        -- Disable sections and component separators
         component_separators = '',
         section_separators = '',
-        --theme = {
-            --normal = { c = { fg = colors.fg, bg = colors.bg } },
-            --inactive = { c = { fg = colors.fg, bg = colors.bg } },
-        --},
-        theme = 'eldritch'
+        theme = {
+            -- We are going to use lualine_c an lualine_x as left and
+            -- right section. Both are highlighted by c theme .  So we
+            -- are just setting default looks o statusline
+            normal = { c = { fg = colors.fg, bg = colors.bg } },
+            inactive = { c = { fg = colors.fg, bg = colors.bg } },
+        },
     },
     sections = {
         -- these are to remove the defaults
@@ -64,22 +73,25 @@ local function ins_left(component)
     table.insert(config.sections.lualine_c, component)
 end
 
--- Inserts a component in lualine_x ot right section
+-- Inserts a component in lualine_x at right section
 local function ins_right(component)
     table.insert(config.sections.lualine_x, component)
 end
 
 ins_left {
     function()
-        return ''
+        return '▊'
     end,
     color = { fg = colors.blue },      -- Sets highlighting of component
-    padding = { left = 0, right = 0 }, -- We don't need space before this
+    padding = { left = 0, right = 1 }, -- We don't need space before this
 }
 
 ins_left {
     -- mode component
     function()
+        return ''
+    end,
+    color = function()
         -- auto change color according to neovims mode
         local mode_color = {
             n = colors.red,
@@ -103,10 +115,8 @@ ins_left {
             ['!'] = colors.red,
             t = colors.red,
         }
-        vim.api.nvim_command('hi! LualineMode guifg=' .. mode_color[vim.fn.mode()] .. ' guibg=' .. colors.bg)
-        return ''
+        return { fg = mode_color[vim.fn.mode()] }
     end,
-    color = 'LualineMode',
     padding = { right = 1 },
 }
 
@@ -131,9 +141,9 @@ ins_left {
     sources = { 'nvim_diagnostic' },
     symbols = { error = ' ', warn = ' ', info = ' ' },
     diagnostics_color = {
-        color_error = { fg = colors.red },
-        color_warn = { fg = colors.yellow },
-        color_info = { fg = colors.cyan },
+        error = { fg = colors.red },
+        warn = { fg = colors.yellow },
+        info = { fg = colors.cyan },
     },
 }
 
@@ -149,7 +159,7 @@ ins_left {
     -- Lsp server name .
     function()
         local msg = 'No Active Lsp'
-        local buf_ft = vim.api.nvim_buf_get_option(0, 'filetype')
+        local buf_ft = vim.api.nvim_get_option_value('filetype', { buf = 0 })
         local clients = vim.lsp.get_clients()
         if next(clients) == nil then
             return msg
@@ -190,7 +200,7 @@ ins_right {
 ins_right {
     'diff',
     -- Is it me or the symbol for modified us really weird
-    symbols = { added = ' ', modified = '柳 ', removed = ' ' },
+    symbols = { added = ' ', modified = '󰝤 ', removed = ' ' },
     diff_color = {
         added = { fg = colors.green },
         modified = { fg = colors.orange },
@@ -201,10 +211,10 @@ ins_right {
 
 ins_right {
     function()
-        return ''
+        return '▊'
     end,
     color = { fg = colors.blue },
-    padding = { left = 0 },
+    padding = { left = 1 },
 }
 
 -- Now don't forget to initialize lualine
