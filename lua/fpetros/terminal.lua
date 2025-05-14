@@ -1,6 +1,16 @@
 local has_toggle_term, toggle_term = pcall(require, 'toggleterm')
 
-if has_toggle_term then
+local M = {}
+
+M.can_setup = function()
+    return toggle_term
+end
+
+M.setup = function()
+    if not M.can_setup() then
+        return
+    end
+
     toggle_term.setup({})
 
     function _G.set_terminal_keymaps()
@@ -22,3 +32,5 @@ if has_toggle_term then
     vim.keymap.set('n', toggle_term_keybind, exec_toggle_term, opts)
     vim.keymap.set('v', toggle_term_keybind, exec_toggle_term, opts)
 end
+
+return M

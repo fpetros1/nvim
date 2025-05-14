@@ -1,8 +1,7 @@
-local has_mason, mason = pcall(require, 'mason')
 local has_mason_reg, mason_reg = pcall(require, 'mason-registry')
 
 local has_necessary_mason_components = function()
-    return has_mason and has_mason_reg
+    return has_mason_reg
 end
 
 local dummy_func = function() end

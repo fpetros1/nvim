@@ -1,7 +1,17 @@
 local has_notify, notify = pcall(require, 'notify')
 local has_fzf, fzf = pcall(require, 'fzf-lua')
 
-if has_notify then
+local M = {}
+
+M.can_setup = function()
+    return has_notify and has_fzf
+end
+
+M.setup = function()
+    if not M.can_setup() then
+        return
+    end
+
     notify.setup({
         background_colour = "#000000",
         fps = 30,
@@ -27,14 +37,14 @@ if has_notify then
 
     vim.notify = notify
 
-    local serializeNotification = function (notification)
-       local serialized = {}
+    local serializeNotification = function(notification)
+        local serialized = {}
 
-       table.insert(serialized, table.concat(notification.title, ''))
-       table.insert(serialized, notification.icon .. ' ' .. notification.level)
-       table.insert(serialized, table.concat(notification.message, ' '))
+        table.insert(serialized, table.concat(notification.title, ''))
+        table.insert(serialized, notification.icon .. ' ' .. notification.level)
+        table.insert(serialized, table.concat(notification.message, ' '))
 
-       return table.concat(serialized, ' | ')
+        return table.concat(serialized, ' | ')
     end
 
 
@@ -47,3 +57,5 @@ if has_notify then
         end, {})
     end)
 end
+
+return M

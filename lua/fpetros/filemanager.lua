@@ -1,6 +1,16 @@
 local has_neotree, neotree = pcall(require, 'neo-tree')
 
-if has_neotree then
+local M = {}
+
+M.can_setup = function()
+    return has_neotree
+end
+
+M.setup = function()
+    if not M.can_setup() then
+        return
+    end
+
     neotree.setup({
         close_if_last_window = true,
         popup_border_style = "rounded",
@@ -24,3 +34,4 @@ if has_neotree then
     vim.keymap.set('i', '<C-b>', toggle_neotree)
 end
 
+return M

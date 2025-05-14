@@ -1,6 +1,16 @@
 local has_flash, flash = pcall(require, 'flash')
 
-if has_flash then
+local M = {}
+
+M.can_setup = function()
+    return has_flash
+end
+
+M.setup = function()
+    if not M.can_setup() then
+        return
+    end
+
     flash.setup({})
 
     local flash_func = function()
@@ -17,3 +27,5 @@ if has_flash then
     vim.keymap.set('v', 'f', flash_func)
     vim.keymap.set('n', '<C-f>', flash_func, { desc = "Flash" })
 end
+
+return M

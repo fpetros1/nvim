@@ -2,12 +2,25 @@ local has_lspconfig, _ = pcall(require, 'lspconfig')
 local has_mason, mason = pcall(require, 'mason')
 local has_mason_lsp, mason_lsp = pcall(require, 'mason-lspconfig')
 local has_fzf, fzf = pcall(require, 'fzf-lua')
-local diagnostic = require('fpetros.diagnostic')
-local completion = require('fpetros.completion')
+local diagnostic = require('fpetros.lsp.diagnostic')
+local completion = require('fpetros.lsp.completion')
 local java_lsp = require('fpetros.lsp.java')
-local formatting = require('fpetros.formatting')
+local formatting = require('fpetros.lsp.formatting')
+local trouble = require('fpetros.lsp.trouble')
 
-if has_lspconfig and has_mason and has_mason_lsp and has_fzf then
+local M = {}
+
+M.can_setup = function()
+    return has_lspconfig and has_mason and has_mason_lsp and has_fzf and diagnostic.can_setup() and
+        completion.can_setup() and java_lsp.can_setup() and
+        trouble.can_setup()
+end
+
+M.setup = function()
+    if not M.can_setup() then
+        return
+    end
+
     local ensure_installed = {
         'ts_ls',
         'rust_analyzer',
@@ -16,13 +29,6 @@ if has_lspconfig and has_mason and has_mason_lsp and has_fzf then
         'pylsp',
         'yamlls'
     }
-
-    mason.setup({
-        registries = {
-            "github:fpetros1/mason-registry",
-            "github:mason-org/mason-registry",
-        }
-    })
 
     local lsp_attach = function(client, bufnr)
         local opts = { buffer = bufnr, remap = false }
@@ -68,4 +74,7 @@ if has_lspconfig and has_mason and has_mason_lsp and has_fzf then
     })
 
     formatting.setup()
+    trouble.setup()
 end
+
+return M

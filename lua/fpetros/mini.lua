@@ -3,40 +3,66 @@ local has_mini_surround, mini_surround        = pcall(require, 'mini.surround')
 local has_mini_animate, mini_animate          = pcall(require, 'mini.animate')
 local has_mini_indentscope, mini_indent_scope = pcall(require, 'mini.indentscope')
 
-if has_mini_surround then
-    mini_surround.setup({
-        mappings = {
-            add = 'za',
-            delete = 'zd',
-            replace = 'zr'
-        }
-    })
+local M                                       = {}
+
+M.can_setup_surround                          = function()
+    return has_mini_surround
 end
 
-if has_mini_animate then
-    mini_animate.setup({
-        cursor = {
-            timing = mini_animate.gen_timing.linear({ duration = 125, unit = 'total' })
-        },
-        scroll = {
-            timing = mini_animate.gen_timing.linear({ duration = 125, unit = 'total' })
-        },
-        open = {
-            enable = false
-        },
-        resize = {
-            enable = false
-        },
-        close = {
-            enable = false
-        }
-    })
+M.can_setup_animate                           = function()
+    return has_mini_animate
 end
 
-if has_mini_indentscope then
-    mini_indent_scope.setup()
+M.can_setup_indentscope                       = function()
+    return has_mini_indentscope
 end
 
-if has_mini_ai then
-    mini_ai.setup()
+M.can_setup_ai                                = function()
+    return has_mini_ai
 end
+
+M.can_setup                                   = function()
+    return M.can_setup_surround() or M.can_setup_animate() or M.can_setup_indentscope() or M.can_setup_ai()
+end
+
+M.setup                                       = function()
+    if M.can_setup_surround() then
+        mini_surround.setup({
+            mappings = {
+                add = 'za',
+                delete = 'zd',
+                replace = 'zr'
+            }
+        })
+    end
+
+    if M.can_setup_animate then
+        mini_animate.setup({
+            cursor = {
+                timing = mini_animate.gen_timing.linear({ duration = 125, unit = 'total' })
+            },
+            scroll = {
+                timing = mini_animate.gen_timing.linear({ duration = 125, unit = 'total' })
+            },
+            open = {
+                enable = false
+            },
+            resize = {
+                enable = false
+            },
+            close = {
+                enable = false
+            }
+        })
+    end
+
+    if M.can_setup_indentscope() then
+        mini_indent_scope.setup()
+    end
+
+    if M.can_setup_ai() then
+        mini_ai.setup()
+    end
+end
+
+return M

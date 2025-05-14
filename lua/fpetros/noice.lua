@@ -1,6 +1,16 @@
 local has_noice, noice = pcall(require, 'noice')
 
-if has_noice then
+local M = {}
+
+M.can_setup = function()
+    return has_noice
+end
+
+M.setup = function()
+    if not M.can_setup() then
+        return
+    end
+
     local config = {
         messages = {
             view = "notify",
@@ -102,3 +112,5 @@ if has_noice then
 
     vim.keymap.set('n', '<leader>cc', function() vim.cmd('NoiceDismiss') end, { desc = "Dismiss Warnings/Errors" })
 end
+
+return M
