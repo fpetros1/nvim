@@ -25,12 +25,36 @@ M.setup = function()
             documentation = {
                 auto_show = true,
                 auto_show_delay_ms = 100,
+                window = {
+                    border = 'rounded',
+                    scrollbar = false
+                },
             },
             ghost_text = { enabled = true },
+            menu = {
+                border = 'rounded',
+                scrollbar = false
+            },
         },
         cmdline = { sources = {} },
-        signature = { enabled = true }
+        signature = {
+            enabled = true,
+            window = {
+                border = 'rounded'
+            }
+        }
     })
+
+    if vim.g.colors_name == 'eldritch' then
+        vim.api.nvim_set_hl(0, 'BlinkCmpMenu', { fg = '#ebfafa', bg = '#212337' })
+        vim.api.nvim_set_hl(0, 'BlinkCmpMenuBorder', { fg = '#37f499', bg = '#212337' })
+        vim.api.nvim_set_hl(0, 'BlinkCmpMenuSelection', { fg = '#ebfafa', bg = '#323449' })
+        vim.api.nvim_set_hl(0, 'BlinkCmpDoc', { fg = '#ebfafa', bg = '#212337' })
+        vim.api.nvim_set_hl(0, 'BlinkCmpDocBorder', { fg = '#37f499', bg = '#212337' })
+        vim.api.nvim_set_hl(0, 'BlinkCmpSignatureHelp', { fg = '#ebfafa', bg = '#212337' })
+        vim.api.nvim_set_hl(0, 'BlinkCmpSignatureHelpBorder', { fg = '#37f499', bg = '#212337' })
+        vim.api.nvim_set_hl(0, 'BlinkCmpSignatureHelpActiveParameter', { fg = '#04d1f9', bg = '#212337' })
+    end
 
     return blink.get_lsp_capabilities()
 end

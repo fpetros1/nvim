@@ -46,7 +46,7 @@ M.setup = function(capabilities, lsp_attach)
     end
 
     local java_config = {
-        settings = env.lsp.java
+        settings = env.lsp.jdtls.settings
     }
 
     local java_cmd = vim.lsp.config.jdtls.cmd

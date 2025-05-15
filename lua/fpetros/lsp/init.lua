@@ -7,13 +7,14 @@ local completion = require('fpetros.lsp.completion')
 local java_lsp = require('fpetros.lsp.java')
 local formatting = require('fpetros.lsp.formatting')
 local trouble = require('fpetros.lsp.trouble')
+local env = require('fpetros.config.env')
 
 local M = {}
 
 M.can_setup = function()
     return has_lspconfig and has_mason and has_mason_lsp and has_fzf and diagnostic.can_setup() and
         completion.can_setup() and java_lsp.can_setup() and
-        trouble.can_setup()
+        trouble.can_setup() and env and env.lsp
 end
 
 M.setup = function()
@@ -21,14 +22,13 @@ M.setup = function()
         return
     end
 
-    local ensure_installed = {
-        'ts_ls',
-        'rust_analyzer',
-        'lua_ls',
-        'jsonls',
-        'pylsp',
-        'yamlls'
-    }
+    local ensure_installed = {}
+
+    for server, config in pairs(env.lsp) do
+        if config.enabled then
+            table.insert(ensure_installed, server)
+        end
+    end
 
     local lsp_attach = function(client, bufnr)
         local opts = { buffer = bufnr, remap = false }
@@ -60,8 +60,7 @@ M.setup = function()
         capabilities = capabilities
     })
 
-    local ensure_installed_java = java_lsp.setup(capabilities, lsp_attach)
-    vim.list_extend(ensure_installed, ensure_installed_java)
+    java_lsp.setup(capabilities, lsp_attach)
 
     vim.lsp.config("bashls", {
         on_attach = lsp_attach,

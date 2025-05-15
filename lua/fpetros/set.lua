@@ -1,15 +1,10 @@
 local M = {}
 
 M.setup = function()
-    --local env_config = require('fpetros.env-config')
-
     vim.g.loaded_netrw = 1
     vim.g.loaded_netrwPlugin = 1
 
     vim.opt.fillchars:append { eob = " " }
-
-    --vim.opt.guifont = env_config.gui.font
-    --vim.opt.linespace = env_config.gui.linespace
 
     vim.opt.guicursor = ""
     vim.o.mouse = "a"

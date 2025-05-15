@@ -22,12 +22,9 @@ M.setup = function()
             "NormalFloat",
             "NeoTreeTitleBar",
             "NeoTreeFloatTitle",
-            'BlinkCmpMenu',
-            'BlinkCmpDoc',
-            'BlinkCmpSignatureHelp',
             'Noice',
             'noice_lsp_docs',
-            'QuickFixLine'
+            'QuickFixLine',
         },
         exclude_groups = {
         },
@@ -43,6 +40,7 @@ M.setup = function()
     transparent.clear_prefix("Lazy")
     transparent.clear_prefix("Mason")
     transparent.clear_prefix("Noice")
+    transparent.clear_prefix("lualine")
 
     vim.api.nvim_create_autocmd('FileType', {
         group = vim.api.nvim_create_augroup('transparent', { clear = true }),
@@ -53,7 +51,7 @@ M.setup = function()
     })
 
     eldritch.setup({
-        transparent = true,
+        transparent = vim.g.neovide == nil,
         terminal_colors = true,
         styles = {
             comments = { italic = true },
