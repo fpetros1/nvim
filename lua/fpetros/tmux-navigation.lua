@@ -17,8 +17,11 @@ M.setup = function()
     vim.keymap.set('n', "<C-j>", nvim_tmux_nav.NvimTmuxNavigateDown, opts)
     vim.keymap.set('n', "<C-k>", nvim_tmux_nav.NvimTmuxNavigateUp, opts)
     vim.keymap.set('n', "<C-l>", nvim_tmux_nav.NvimTmuxNavigateRight, opts)
-    vim.keymap.set('n', "<C-\\>", nvim_tmux_nav.NvimTmuxNavigateLastActive, opts)
-    vim.keymap.set('n', "<C-Space>", nvim_tmux_nav.NvimTmuxNavigateNext, opts)
+
+    vim.keymap.set('n', '<leader>wh', nvim_tmux_nav.NvimTmuxNavigateLeft, opts)
+    vim.keymap.set('n', '<leader>wj', nvim_tmux_nav.NvimTmuxNavigateDown, opts)
+    vim.keymap.set('n', '<leader>wk', nvim_tmux_nav.NvimTmuxNavigateUp, opts)
+    vim.keymap.set('n', '<leader>wl', nvim_tmux_nav.NvimTmuxNavigateRight, opts)
 end
 
 return M

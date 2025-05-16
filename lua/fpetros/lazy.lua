@@ -54,10 +54,6 @@ M.setup = function()
                     "nvim-treesitter/nvim-treesitter-context",
                 }
             },
-            run = function()
-                local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
-                ts_update()
-            end,
         },
         {
             "folke/lsp-trouble.nvim",
@@ -97,6 +93,32 @@ M.setup = function()
             as = "dashboard",
             event = 'VimEnter',
             dependencies = { 'nvim-tree/nvim-web-devicons' }
+        },
+        {
+            "ThePrimeagen/harpoon",
+            branch = "harpoon2",
+            dependencies = { "nvim-lua/plenary.nvim" }
+        },
+        {
+            "kdheepak/lazygit.nvim",
+            as = 'lazygit',
+            lazy = true,
+            cmd = {
+                "LazyGit",
+                "LazyGitConfig",
+                "LazyGitCurrentFile",
+                "LazyGitFilter",
+                "LazyGitFilterCurrentFile",
+            },
+            dependencies = {
+                "nvim-lua/plenary.nvim",
+            }
+        },
+        "lewis6991/gitsigns.nvim",
+        {
+            'MeanderingProgrammer/render-markdown.nvim',
+            dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+            opts = {},
         },
     });
 end
