@@ -1,5 +1,5 @@
 local has_lspconfig, _ = pcall(require, 'lspconfig')
-local has_mason, mason = pcall(require, 'mason')
+local has_mason, _ = pcall(require, 'mason')
 local has_mason_lsp, mason_lsp = pcall(require, 'mason-lspconfig')
 local has_fzf, fzf = pcall(require, 'fzf-lua')
 local diagnostic = require('fpetros.lsp.diagnostic')
@@ -13,8 +13,7 @@ local M = {}
 
 M.can_setup = function()
     return has_lspconfig and has_mason and has_mason_lsp and has_fzf and diagnostic.can_setup() and
-        completion.can_setup() and java_lsp.can_setup() and
-        trouble.can_setup() and env and env.lsp
+        completion.can_setup() and trouble.can_setup() and env and env.lsp
 end
 
 M.setup = function()

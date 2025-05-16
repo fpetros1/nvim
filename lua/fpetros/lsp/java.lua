@@ -5,10 +5,14 @@ local env = require('fpetros.config.env')
 local M = {}
 
 M.can_setup = function()
-    return env and mason_utils and formatting
+    return env.lsp.jdtls and env.lsp.jdtls.enabled and mason_utils and formatting
 end
 
 M.setup = function(capabilities, lsp_attach)
+    if not M.can_setup() then
+        return {}
+    end
+
     mason_utils.ensure_installed({
         'google-java-format',
         'lombok'

@@ -76,7 +76,6 @@ M.setup = function()
         },
         { "alexghergh/nvim-tmux-navigation" },
         { 'echasnovski/mini.ai',            version = false },
-        { 'echasnovski/mini.animate',       version = false },
         { 'echasnovski/mini.surround',      version = false },
         { 'echasnovski/mini.indentscope',   version = false },
         {
@@ -120,6 +119,11 @@ M.setup = function()
             dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
             opts = {},
         },
+        {
+            "karb94/neoscroll.nvim",
+            as = 'neoscroll'
+        },
+        'cxwx/specs.nvim'
     });
 end
 
