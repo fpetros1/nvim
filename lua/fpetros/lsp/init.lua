@@ -5,6 +5,7 @@ local has_fzf, fzf = pcall(require, 'fzf-lua')
 local diagnostic = require('fpetros.lsp.diagnostic')
 local completion = require('fpetros.lsp.completion')
 local java_lsp = require('fpetros.lsp.java')
+local bash_lsp = require('fpetros.lsp.bash')
 local formatting = require('fpetros.lsp.formatting')
 local trouble = require('fpetros.lsp.trouble')
 local env = require('fpetros.config.env')
@@ -60,12 +61,7 @@ M.setup = function()
     })
 
     java_lsp.setup(capabilities, lsp_attach)
-
-    vim.lsp.config("bashls", {
-        on_attach = lsp_attach,
-        filetypes = { 'sh', 'zsh', 'bash' },
-        capabilities = capabilities
-    })
+    bash_lsp.setup(capabilities, lsp_attach)
 
     mason_lsp.setup({
         ensure_installed = ensure_installed,

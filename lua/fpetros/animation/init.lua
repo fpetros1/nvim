@@ -1,6 +1,6 @@
 local submodules = {
-    require('fpetros.git.gitsigns'),
-    require('fpetros.git.lazygit')
+    require('fpetros.animation.specs'),
+    require('fpetros.animation.neoscroll')
 }
 
 local M = {}

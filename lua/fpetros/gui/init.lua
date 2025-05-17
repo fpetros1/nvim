@@ -1,11 +1,14 @@
-local set = require('fpetros.gui.set')
-local neovide = require('fpetros.gui.neovide')
+local submodules = {
+    require('fpetros.gui.set'),
+    require('fpetros.gui.neovide')
+}
 
 local M = {}
 
 M.setup = function()
-    set.setup()
-    neovide.setup()
+    for _, submodule in ipairs(submodules) do
+        submodule.setup()
+    end
 end
 
 return M

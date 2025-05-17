@@ -1,23 +1,29 @@
-require("fpetros.set").setup()
-require("fpetros.remap").setup()
-require("fpetros.lazy").setup()
-require("fpetros.mason").setup()
-require("fpetros.gui").setup()
-require("fpetros.notifications").setup()
-require("fpetros.color").setup()
-require("fpetros.line").setup()
-require("fpetros.fzf").setup()
-require("fpetros.filemanager").setup()
-require("fpetros.mini").setup()
-require("fpetros.harpoon").setup()
-require("fpetros.treesitter").setup()
-require("fpetros.noice").setup()
-require("fpetros.tmux-navigation").setup()
-require("fpetros.dashboard").setup()
-require("fpetros.move").setup()
-require("fpetros.markdown").setup()
-require("fpetros.terminal").setup()
-require("fpetros.lsp").setup()
-require("fpetros.flash").setup()
-require("fpetros.git").setup()
-require("fpetros.animation").setup()
+local modules = {
+    'set',
+    'remap',
+    'lazy',
+    'mason',
+    'gui',
+    'notifications',
+    'animation',
+    'color',
+    'line',
+    'fzf',
+    'filemanager',
+    'mini',
+    'harpoon',
+    'treesitter',
+    'noice',
+    'tmux-navigation',
+    'dashboard',
+    'move',
+    'markdown',
+    'terminal',
+    'lsp',
+    'flash',
+    'git'
+}
+
+for _, module in ipairs(modules) do
+    require('fpetros.' .. module).setup()
+end
