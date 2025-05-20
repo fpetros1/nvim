@@ -16,12 +16,12 @@ local modules = {
     'noice',
     'tmux-navigation',
     'dashboard',
-    'move',
     'markdown',
     'terminal',
     'lsp',
     'flash',
-    'git'
+    'git',
+    'move',
 }
 
 for _, module in ipairs(modules) do
