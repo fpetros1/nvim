@@ -199,6 +199,8 @@ M.set_default_java_version_from_file = function(java_config, client)
 
         return M.update_default_java(java_config, default_java_version)
     end
+
+    return java_config
 end
 
 M.get_default_java_version_from_config = function()
