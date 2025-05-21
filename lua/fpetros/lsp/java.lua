@@ -1,11 +1,23 @@
+local has_fzf, fzf = pcall(require, 'fzf-lua')
+
 local formatting = require('fpetros.lsp.formatting')
 local mason_utils = require('fpetros.utils.mason')
 local env = require('fpetros.config.env')
 
+local java_version_file = '.java.version'
+
+local published_configuration = {}
+
 local M = {}
 
 M.can_setup = function()
-    return env.lsp.jdtls and env.lsp.jdtls.enabled and mason_utils and formatting
+    return env.lsp.jdtls and
+        env.lsp.jdtls.enabled and
+        env.lsp.jdtls.settings and
+        env.lsp.jdtls.settings.configuration and
+        env.lsp.jdtls.settings.configuration.runtimes and
+        mason_utils and
+        formatting
 end
 
 M.setup = function(capabilities, lsp_attach)
@@ -49,10 +61,6 @@ M.setup = function(capabilities, lsp_attach)
         done_format(obj)
     end
 
-    local java_config = {
-        settings = env.lsp.jdtls.settings
-    }
-
     local java_cmd = vim.lsp.config.jdtls.cmd
     local lombok_path = vim.fn.stdpath("data") .. "/mason/packages/lombok/lombok.jar"
 
@@ -67,10 +75,18 @@ M.setup = function(capabilities, lsp_attach)
 
             vim.keymap.set("n", "<leader>ff", format_code_using_google, opts)
             vim.keymap.set("v", "<leader>ff", format_code_using_google, opts)
+            vim.keymap.set({ "n", "v" }, "<leader>jvm", M.choose_java_version, opts)
+            vim.keymap.set({ "n", "v" }, "<leader>jjvm", function()
+                local default_java = M.get_default_java_version()
+                vim.notify('Java Runtime: ' .. default_java)
+            end, opts)
 
             formatting.set_server({ 'jdtls' }, format_code_using_google)
 
-            client:notify('workspace/didChangeConfiguration', java_config)
+            local initial_config = vim.deepcopy(env.lsp.jdtls.settings)
+
+            initial_config = M.set_default_java_version_from_file(initial_config, client)
+            M.update_client_configuration(initial_config, client, true)
         end,
         capabilities = capabilities,
         cmd = java_cmd,
@@ -79,6 +95,139 @@ M.setup = function(capabilities, lsp_attach)
     return {
         'jdtls'
     }
+end
+
+M.choose_java_version = function()
+    if has_fzf then
+        fzf.fzf_exec(function(fzf_cb)
+            for _, item in ipairs(M.get_java_versions()) do
+                fzf_cb(item)
+            end
+            fzf_cb()
+        end, {
+            winopts = {
+                height = 0.30,
+                width = 0.30,
+            },
+            actions = {
+                ['default'] = function(selected)
+                    local buf_client = vim.lsp.get_clients({ name = 'jdtls', bufnr = 0 })[1]
+
+                    if buf_client then
+                        local update_file = true
+                        for _, client in ipairs(vim.lsp.get_clients({ name = 'jdtls' })) do
+                            if buf_client.root_dir == client.root_dir then
+                                local current_config = vim.deepcopy(published_configuration[client.root_dir])
+                                current_config = M.update_default_java(current_config, selected[1])
+                                M.update_client_configuration(current_config, client, update_file)
+                                update_file = false
+                            end
+                        end
+                    end
+                end
+            }
+        })
+    end
+end
+
+M.update_default_java = function(java_config, default_java_version)
+    for _, runtime in ipairs(java_config.configuration.runtimes) do
+        runtime.default = runtime.name == default_java_version and true or false
+    end
+
+    local has_default = false
+
+    for _, runtime in ipairs(java_config.configuration.runtimes) do
+        if runtime.default then
+            has_default = true
+            break
+        end
+    end
+
+    if not has_default and #java_config.configuration.runtimes > 0 then
+        java_config.configuration.runtimes[1].default = true
+    end
+
+    return java_config
+end
+
+M.update_client_configuration = function(java_config, client, update_file)
+    if not vim.deep_equal(java_config, published_configuration[client.root_dir]) then
+        local notificationResult = client:notify('workspace/didChangeConfiguration', {
+            settings = java_config
+        })
+
+        if notificationResult then
+            published_configuration[client.root_dir] = vim.deepcopy(java_config)
+
+            if update_file then
+                local java_version_file_path = client.root_dir .. '/' .. java_version_file
+                local default_java_version = M.get_default_java_version() or M.get_default_java_version_from_config()
+
+                if default_java_version then
+                    local java_version_file_handle = assert(io.open(java_version_file_path, 'w'))
+                    java_version_file_handle:write(default_java_version)
+                    java_version_file_handle:flush()
+                    java_version_file_handle:close()
+                end
+            end
+        end
+    end
+end
+
+M.get_default_java_version_from_file = function(client)
+    local java_version_file_path = client.root_dir .. '/' .. java_version_file
+
+    if (vim.uv or vim.loop).fs_stat(java_version_file_path) then
+        local java_version_file_handle = assert(io.open(java_version_file_path, 'r'))
+        local default_java_version = java_version_file_handle:read('*all')
+        java_version_file_handle:close()
+
+        return default_java_version
+    end
+
+    return nil
+end
+
+M.set_default_java_version_from_file = function(java_config, client)
+    local java_version_file_path = client.root_dir .. '/' .. java_version_file
+
+    if (vim.uv or vim.loop).fs_stat(java_version_file_path) then
+        local java_version_file_handle = assert(io.open(java_version_file_path, 'r'))
+        local default_java_version = java_version_file_handle:read('*all')
+        java_version_file_handle:close()
+
+        return M.update_default_java(java_config, default_java_version)
+    end
+end
+
+M.get_default_java_version_from_config = function()
+    for _, runtime in ipairs(env.lsp.jdtls.settings.configuration.runtimes) do
+        if runtime.default then
+            return runtime.name
+        end
+    end
+
+    return nil
+end
+
+M.get_default_java_version = function()
+    local buf_client = vim.lsp.get_clients({ name = 'jdtls', bufnr = 0 })[1]
+    local current_config = published_configuration[buf_client.root_dir]
+
+    for _, runtime in ipairs(current_config.configuration.runtimes) do
+        if runtime.default then
+            return runtime.name
+        end
+    end
+
+    return nil
+end
+
+M.get_java_versions = function()
+    return vim.tbl_map(function(runtime)
+        return runtime.name
+    end, env.lsp.jdtls.settings.configuration.runtimes)
 end
 
 return M
