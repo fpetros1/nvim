@@ -24,7 +24,6 @@ M.setup = function()
             "NeoTreeFloatTitle",
             'Noice',
             'noice_lsp_docs',
-            'QuickFixLine',
         },
         exclude_groups = {
         },
@@ -40,15 +39,7 @@ M.setup = function()
     transparent.clear_prefix("Lazy")
     transparent.clear_prefix("Mason")
     transparent.clear_prefix("Noice")
-    transparent.clear_prefix("lualine")
-
-    vim.api.nvim_create_autocmd('FileType', {
-        group = vim.api.nvim_create_augroup('transparent', { clear = true }),
-        pattern = 'qf',
-        callback = function()
-            vim.api.nvim_set_option_value('winhl', 'Normal:dark', { win = 0 })
-        end,
-    })
+    transparent.clear_prefix("QuickFix")
 
     eldritch.setup({
         transparent = vim.g.neovide == nil,

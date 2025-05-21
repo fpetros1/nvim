@@ -13,10 +13,10 @@ M.setup = function()
     end
 
     vim.cmd("TransparentEnable")
-    vim.cmd("let g:neovide_padding_bottom=15")
-    vim.cmd("let g:neovide_padding_top=15")
-    vim.cmd("let g:neovide_padding_left=15")
-    vim.cmd("let g:neovide_padding_right=15")
+    vim.cmd("let g:neovide_padding_bottom=0")
+    vim.cmd("let g:neovide_padding_top=0")
+    vim.cmd("let g:neovide_padding_left=0")
+    vim.cmd("let g:neovide_padding_right=0")
 
     local neovide_config = env.gui.neovide
 

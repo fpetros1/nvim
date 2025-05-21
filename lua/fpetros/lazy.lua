@@ -123,7 +123,8 @@ M.setup = function()
             "karb94/neoscroll.nvim",
             as = 'neoscroll'
         },
-        'cxwx/specs.nvim'
+        'cxwx/specs.nvim',
+        'stevearc/quicker.nvim',
     });
 end
 

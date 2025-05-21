@@ -7,13 +7,8 @@ M.can_setup = function()
 end
 
 M.setup = function()
-    -- Eviline config for lualine
-    -- Author: shadmansaleh
-    -- Credit: glepnir
-    -- Color table for highlights
-    -- stylua: ignore
     local colors = {
-        bg       = '#212337',
+        bg       = '#323449',
         fg       = '#EBFAFA',
         yellow   = '#F1FC79',
         cyan     = '#04D1F9',
@@ -26,205 +21,584 @@ M.setup = function()
         red      = '#F16C75',
     }
 
-    local conditions = {
-        buffer_not_empty = function()
-            return vim.fn.empty(vim.fn.expand('%:t')) ~= 1
-        end,
-        hide_in_width = function()
-            return vim.fn.winwidth(0) > 80
-        end,
-        check_git_workspace = function()
-            local filepath = vim.fn.expand('%:p:h')
-            local gitdir = vim.fn.finddir('.git', filepath .. ';')
-            return gitdir and #gitdir > 0 and #gitdir < #filepath
-        end,
+    -- Function to get the color associated with the current mode in Vim
+    local function get_mode_color()
+        -- Define a table mapping modes to their associated colors
+        local mode_color = {
+            n = colors.orange,
+            i = colors.violet,
+            v = colors.red,
+            [''] = colors.violet,
+            V = colors.red,
+            c = colors.magenta,
+            no = colors.red,
+            s = colors.orange,
+            S = colors.orange,
+            [''] = colors.orange,
+            ic = colors.yellow,
+            R = colors.orange,
+            Rv = colors.orange,
+            cv = colors.red,
+            ce = colors.red,
+            r = colors.cyan,
+            rm = colors.cyan,
+            ['r?'] = colors.cyan,
+            ['!'] = colors.red,
+            t = colors.red,
+        }
+        -- Return the opposite color, or fallback to foreground color
+        return mode_color[vim.fn.mode()]
+    end
+
+    -- Function to get the opposite color of a given mode color
+    local function get_opposite_color(mode_color)
+        -- Define a table mapping colors to their opposite color
+        local opposite_colors = {
+            [colors.red] = colors.cyan,
+            [colors.blue] = colors.orange,
+            [colors.green] = colors.magenta,
+            [colors.magenta] = colors.yellow,
+            [colors.orange] = colors.blue,
+            [colors.cyan] = colors.yellow,
+            [colors.violet] = colors.green,
+            [colors.yellow] = colors.red,
+            [colors.darkblue] = colors.violet,
+        }
+        -- Return the opposite color, or fallback to foreground color
+        return opposite_colors[mode_color] or colors.fg
+    end
+
+    -- Function to get an animated color (randomly chosen from available colors)
+    local function get_animated_color(mode_color)
+        -- Define a list of all available colors
+        local all_colors = {
+            colors.red,
+            colors.blue,
+            colors.green,
+            colors.magenta,
+            colors.orange,
+            colors.cyan,
+            colors.violet,
+            colors.yellow,
+            colors.darkblue,
+        }
+        -- Create a list of possible opposite colors (excluding the current mode color)
+        local possible_opposites = {}
+        for _, color in ipairs(all_colors) do
+            if color ~= mode_color then
+                table.insert(possible_opposites, color)
+            end
+        end
+        -- Randomly select an opposite color
+        if #possible_opposites > 0 then
+            local random_index = math.random(1, #possible_opposites)
+            return possible_opposites[random_index]
+        else
+            return colors.fg -- Default to foreground color if no opposite found
+        end
+    end
+
+    -- Function to interpolate between two colors for a smooth transition
+    local function interpolate_color(color1, color2, step)
+        -- Blend two colors based on the given step factor (0.0 -> color1, 1.0 -> color2)
+        local blend = function(c1, c2, stp)
+            return math.floor(c1 + (c2 - c1) * stp)
+        end
+        -- Extract the RGB values of both colors (in hex)
+        local r1, g1, b1 = tonumber(color1:sub(2, 3), 16), tonumber(color1:sub(4, 5), 16), tonumber(color1:sub(6, 7), 16)
+        local r2, g2, b2 = tonumber(color2:sub(2, 3), 16), tonumber(color2:sub(4, 5), 16), tonumber(color2:sub(6, 7), 16)
+
+        -- Calculate the new RGB values for the blended color
+        local r = blend(r1, r2, step)
+        local g = blend(g1, g2, step)
+        local b = blend(b1, b2, step)
+
+        -- Return the blended color in hex format
+        return string.format('#%02X%02X%02X', r, g, b)
+    end
+
+    -- Function to get a middle color by interpolating between mode color and its opposite
+    local function get_middle_color(color_step)
+        -- Set default value for color_step if not provided
+        color_step = color_step or 0.5            -- If color_step is nil, default to 0.5
+
+        local color1 = get_mode_color()           -- Get the current mode color
+        local color2 = get_opposite_color(color1) -- Get the opposite color
+
+        -- Return an interpolated color between the two (based on the color_step value)
+        return interpolate_color(color1, color2, color_step)
+    end
+
+    -- Condition: Check if the buffer is not empty
+    -- This checks whether the current file's name is non-empty.
+    -- If the file is open (i.e., has a name), it returns true, meaning the buffer is not empty.
+    -- local function buffer_not_empty()
+    -- 	return vim.fn.empty(vim.fn.expand('%:t')) ~= 1 -- 'expand('%:t')' gets the file name
+    -- end
+
+    -- Condition: Hide in width (only show the statusline when the window width is greater than 80)
+    -- This ensures that the statusline will only appear if the current window width exceeds 80 characters.
+    local function hide_in_width()
+        return vim.fn.winwidth(0) > 80 -- 'winwidth(0)' returns the current window width
+    end
+
+    -- Condition: Check if the current workspace is inside a Git repository
+    -- This function checks if the current file is inside a Git repository by looking for a `.git` directory
+    -- in the current file's path. Returns true if the file is in a Git workspace.
+    -- local function check_git_workspace()
+    -- 	local filepath = vim.fn.expand('%:p:h')               -- Get the current file's directory
+    -- 	local gitdir = vim.fn.finddir('.git', filepath .. ';') -- Search for a `.git` directory in the file path
+    -- 	return gitdir and #gitdir > 0 and #gitdir < #filepath -- Returns true if a `.git` directory is found
+    -- end
+
+    -- -- Set random seed based on current time for randomness
+    math.randomseed(os.time())
+    -- Icon sets for random selection
+    local icon_sets = {
+        stars = { '★', '☆', '✧', '✦', '✶', '✷', '✸', '✹' }, -- Set of star-like icons
+        runes = {
+            '✠',
+            '⛧',
+            '𖤐',
+            'ᛟ',
+            'ᚨ',
+            'ᚱ',
+            'ᚷ',
+            'ᚠ',
+            'ᛉ',
+            'ᛊ',
+            'ᛏ',
+            '☠',
+            '☾',
+            '♰',
+            '✟',
+            '☽',
+            '⚚',
+            '🜏',
+        }, -- Set of rune-like symbols
+        hearts = { '❤', '♥', '♡', '❦', '❧' }, -- Set of heart-shaped icons
+        waves = { '≈', '∿', '≋', '≀', '⌀', '≣', '⌇' }, -- Set of wave-like symbols
+        crosses = { '☨', '✟', '♰', '♱', '⛨', '' }, -- Set of cross-like symbols
     }
+
+    -- Function to select a random icon from a given set
+    local function get_random_icon(icons)
+        return icons[math.random(#icons)] -- Returns a random icon from the set
+    end
+
+    -- Function to shuffle the elements in a table
+    local function shuffle_table(tbl)
+        local n = #tbl
+        while n > 1 do
+            local k = math.random(n)
+            tbl[n], tbl[k] = tbl[k], tbl[n] -- Swap elements
+            n = n - 1                       -- Decrease the size of the unsorted portion
+        end
+    end
+
+    -- Create a list of all icon sets to allow for random selection from any set
+    local icon_sets_list = {}
+    for _, icons in pairs(icon_sets) do
+        table.insert(icon_sets_list, icons) -- Add each icon set to the list
+    end
+    shuffle_table(icon_sets_list)           -- Shuffle the icon sets list
+
+    -- Function to reverse the order of elements in a table
+    local function reverse_table(tbl)
+        local reversed = {}
+        for i = #tbl, 1, -1 do
+            table.insert(reversed, tbl[i]) -- Insert elements in reverse order
+        end
+        return reversed
+    end
+
+    -- Create a reversed list of icon sets
+    local reversed_icon_sets = reverse_table(icon_sets_list)
+
+    -- Function to create a separator component based on side (left/right) and optional mode color
+    local function create_separator(side, use_mode_color)
+        return {
+            function()
+                return side == 'left' and '' or '' -- Choose separator symbol based on side
+            end,
+            color = function()
+                -- Set color based on mode or opposite color
+                local color = use_mode_color and get_mode_color() or get_opposite_color(get_mode_color())
+                return {
+                    fg = color,
+                }
+            end,
+            padding = {
+                left = 0,
+            },
+        }
+    end
+
+    -- Function to create a mode-based component (e.g., statusline)
+    -- with optional content, icon, and colors
+    local function create_mode_based_component(content, icon, color_fg, color_bg)
+        return {
+            content,
+            icon = icon,
+            color = function()
+                local mode_color = get_mode_color()
+                local opposite_color = get_opposite_color(mode_color)
+                return {
+                    fg = color_fg or colors.fg,
+                    bg = color_bg or opposite_color,
+                    gui = 'bold',
+                }
+            end,
+        }
+    end
+
+    -- -- Function to get the current mode indicator as a single character
+    local function mode()
+        -- Map of modes to their respective shorthand indicators
+        local mode_map = {
+            n = 'N',      -- Normal mode
+            i = 'I',      -- Insert mode
+            v = 'V',      -- Visual mode
+            [''] = 'V',  -- Visual block mode
+            V = 'V',      -- Visual line mode
+            c = 'C',      -- Command-line mode
+            no = 'N',     -- NInsert mode
+            s = 'S',      -- Select mode
+            S = 'S',      -- Select line mode
+            ic = 'I',     -- Insert mode (completion)
+            R = 'R',      -- Replace mode
+            Rv = 'R',     -- Virtual Replace mode
+            cv = 'C',     -- Command-line mode
+            ce = 'C',     -- Ex mode
+            r = 'R',      -- Prompt mode
+            rm = 'M',     -- More mode
+            ['r?'] = '?', -- Confirm mode
+            ['!'] = '!',  -- Shell mode
+            t = 'T',      -- Terminal mode
+        }
+        -- Return the mode shorthand or [UNKNOWN] if no match
+        return mode_map[vim.fn.mode()] or '[UNKNOWN]'
+    end
 
     -- Config
     local config = {
         options = {
-            -- Disable sections and component separators
             component_separators = '',
             section_separators = '',
             theme = {
-                -- We are going to use lualine_c an lualine_x as left and
-                -- right section. Both are highlighted by c theme .  So we
-                -- are just setting default looks o statusline
-                normal = { c = { fg = colors.fg, bg = colors.bg } },
-                inactive = { c = { fg = colors.fg, bg = colors.bg } },
+                normal = {
+                    c = {
+                        fg = colors.fg,
+                        bg = colors.bg,
+                    },
+                },
+                inactive = {
+                    c = {
+                        fg = colors.fg,
+                        bg = colors.bg,
+                    },
+                }, -- Simplified inactive theme
+            },
+            disabled_filetypes = {
+                'neo-tree',
+                'undotree',
+                'sagaoutline',
+                'diff',
             },
         },
         sections = {
-            -- these are to remove the defaults
             lualine_a = {},
             lualine_b = {},
-            lualine_y = {},
-            lualine_z = {},
-            -- These will be filled later
             lualine_c = {},
             lualine_x = {},
+            lualine_y = {},
+            lualine_z = {},
         },
         inactive_sections = {
-            -- these are to remove the defaults
             lualine_a = {},
             lualine_b = {},
+            lualine_c = {
+                {
+
+                    'location',
+                    color = function()
+                        return {
+                            fg = colors.fg,
+                            gui = 'bold',
+                        }
+                    end,
+                },
+            },
+            lualine_x = {
+                {
+                    'filename',
+                    color = function()
+                        return {
+                            fg = colors.fg,
+                            gui = 'bold,italic',
+                        }
+                    end,
+                },
+            },
             lualine_y = {},
             lualine_z = {},
-            lualine_c = {},
-            lualine_x = {},
         },
     }
 
-    -- Inserts a component in lualine_c at left section
+    -- Helper functions
     local function ins_left(component)
         table.insert(config.sections.lualine_c, component)
     end
 
-    -- Inserts a component in lualine_x at right section
     local function ins_right(component)
         table.insert(config.sections.lualine_x, component)
     end
 
+    -- LEFT
     ins_left {
-        function()
-            return '▊'
+        mode,
+        color = function()
+            local mode_color = get_mode_color()
+            return {
+                fg = colors.bg,
+                bg = mode_color,
+                gui = 'bold',
+            }
         end,
-        color = { fg = colors.blue },      -- Sets highlighting of component
-        padding = { left = 0, right = 1 }, -- We don't need space before this
+        padding = { left = 1, right = 1 },
     }
 
+    ins_left(create_separator('left', true))
+
     ins_left {
-        -- mode component
         function()
-            return ''
+            return vim.fn.fnamemodify(vim.fn.getcwd(), ':t')
+        end,
+        icon = ' ',
+        color = function()
+            local virtual_env = vim.env.VIRTUAL_ENV
+            if virtual_env then
+                return {
+                    fg = get_mode_color(),
+                    gui = 'bold,strikethrough',
+                }
+            else
+                return {
+                    fg = get_mode_color(),
+                    gui = 'bold',
+                }
+            end
+        end,
+    }
+
+    ins_left(create_separator('right'))
+
+    ins_left(create_mode_based_component('filename', nil, colors.bg))
+
+    ins_left(create_separator('left'))
+
+    ins_left {
+        function()
+            return ''
         end,
         color = function()
-            -- auto change color according to neovims mode
-            local mode_color = {
-                n = colors.red,
-                i = colors.green,
-                v = colors.blue,
-                [''] = colors.blue,
-                V = colors.blue,
-                c = colors.magenta,
-                no = colors.red,
-                s = colors.orange,
-                S = colors.orange,
-                [''] = colors.orange,
-                ic = colors.yellow,
-                R = colors.violet,
-                Rv = colors.violet,
-                cv = colors.red,
-                ce = colors.red,
-                r = colors.cyan,
-                rm = colors.cyan,
-                ['r?'] = colors.cyan,
-                ['!'] = colors.red,
-                t = colors.red,
+            return {
+                fg = get_middle_color(),
             }
-            return { fg = mode_color[vim.fn.mode()] }
         end,
-        padding = { right = 1 },
+        cond = hide_in_width,
     }
 
     ins_left {
-        -- filesize component
-        'filesize',
-        cond = conditions.buffer_not_empty,
+        function()
+            local git_status = vim.b.gitsigns_status_dict
+            if git_status then
+                return string.format('+%d ~%d -%d', git_status.added or 0, git_status.changed or 0,
+                    git_status.removed or 0)
+            end
+            return ''
+        end,
+        -- icon = '󰊢 ',
+        color = {
+            fg = colors.yellow,
+            gui = 'bold',
+        },
+        cond = hide_in_width,
     }
 
+    for _, icons in pairs(icon_sets_list) do
+        ins_left {
+            function()
+                return get_random_icon(icons)
+            end,
+            color = function()
+                return {
+                    fg = get_animated_color(),
+                }
+            end,
+            cond = hide_in_width,
+        }
+    end
+
     ins_left {
-        'filename',
-        cond = conditions.buffer_not_empty,
-        color = { fg = colors.magenta, gui = 'bold' },
-    }
-
-    ins_left { 'location' }
-
-    ins_left { 'progress', color = { fg = colors.fg, gui = 'bold' } }
-
-    ins_left {
-        'diagnostics',
-        sources = { 'nvim_diagnostic' },
-        symbols = { error = ' ', warn = ' ', info = ' ' },
-        diagnostics_color = {
-            error = { fg = colors.red },
-            warn = { fg = colors.yellow },
-            info = { fg = colors.cyan },
+        'searchcount',
+        color = {
+            fg = colors.green,
+            gui = 'bold',
         },
     }
 
-    -- Insert mid section. You can make any number of sections in neovim :)
-    -- for lualine it's any number greater then 2
-    ins_left {
+    -- RIGHT
+    ins_right {
         function()
-            return '%='
+            local reg = vim.fn.reg_recording()
+            return reg ~= '' and '[' .. reg .. ']' or ''
+        end,
+        color = {
+            fg = '#ff3344',
+            gui = 'bold',
+        },
+        cond = function()
+            return vim.fn.reg_recording() ~= ''
         end,
     }
 
-    ins_left {
-        -- Lsp server name .
+    ins_right {
+        'selectioncount',
+        color = {
+            fg = colors.green,
+            gui = 'bold',
+        },
+    }
+
+    for _, icons in ipairs(reversed_icon_sets) do
+        ins_right {
+            function()
+                return get_random_icon(icons)
+            end,
+            color = function()
+                return {
+                    fg = get_animated_color(),
+                }
+            end,
+            cond = hide_in_width,
+        }
+    end
+
+    ins_right {
         function()
             local msg = 'No Active Lsp'
-            local buf_ft = vim.api.nvim_get_option_value('filetype', { buf = 0 })
+            local buf_ft = vim.o.filetype
             local clients = vim.lsp.get_clients()
+
             if next(clients) == nil then
                 return msg
             end
             for _, client in ipairs(clients) do
                 local filetypes = client.config.filetypes
-                if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
+                if filetypes and vim.tbl_contains(filetypes, buf_ft) ~= -1 then
                     return client.name
                 end
             end
             return msg
         end,
-        icon = ' LSP:',
-        color = { fg = '#ffffff', gui = 'bold' },
-    }
-
-    -- Add components to right sections
-    ins_right {
-        'o:encoding',       -- option component same as &encoding in viml
-        fmt = string.upper, -- I'm not sure why it's upper case either ;)
-        cond = conditions.hide_in_width,
-        color = { fg = colors.green, gui = 'bold' },
-    }
-
-    ins_right {
-        'fileformat',
-        fmt = string.upper,
-        icons_enabled = false, -- I think icons are cool but Eviline doesn't have them. sigh
-        color = { fg = colors.green, gui = 'bold' },
-    }
-
-    ins_right {
-        'branch',
-        icon = '',
-        color = { fg = colors.violet, gui = 'bold' },
-    }
-
-    ins_right {
-        'diff',
-        -- Is it me or the symbol for modified us really weird
-        symbols = { added = ' ', modified = '󰝤 ', removed = ' ' },
-        diff_color = {
-            added = { fg = colors.green },
-            modified = { fg = colors.orange },
-            removed = { fg = colors.red },
+        icon = ' ',
+        color = {
+            fg = colors.yellow,
+            gui = 'bold',
         },
-        cond = conditions.hide_in_width,
     }
 
     ins_right {
         function()
-            return '▊'
+            return ''
         end,
-        color = { fg = colors.blue },
-        padding = { left = 1 },
+        color = function()
+            return { fg = get_middle_color() }
+        end,
+        cond = hide_in_width,
     }
 
-    -- Now don't forget to initialize lualine
+    ins_right(create_separator('right'))
+
+    ins_right(create_mode_based_component('location', nil, colors.bg))
+
+    ins_right(create_separator('left'))
+
+    ins_right {
+        'branch',
+        icon = ' ',
+        --[[ Truncates and formats Git branch names for display in lualine:
+    First segment: Uppercase, truncated to 1 character.
+    Middle segments: Lowercase, truncated to 1 character.
+    Last segment: Unchanged.
+    Separator: › between truncated segments and the last segment.
+
+    Example Input/Output:
+		Branch										Name	Output
+		backend/setup/tailwind		Bs›tailwind
+		feature/add-ui						Fa›add-ui
+		main											main
+	]]
+        fmt = function(branch)
+            if branch == '' or branch == nil then
+                return 'No Repo'
+            end
+
+            -- Function to truncate a segment to a specified length
+            local function truncate_segment(segment, max_length)
+                if #segment > max_length then
+                    return segment:sub(1, max_length)
+                end
+                return segment
+            end
+
+            -- Split the branch name by '/'
+            local segments = {}
+            for segment in branch:gmatch('[^/]+') do
+                table.insert(segments, segment)
+            end
+
+            -- Truncate all segments except the last one
+            for i = 1, #segments - 1 do
+                segments[i] = truncate_segment(segments[i], 1) -- Truncate to 1 character
+            end
+
+            -- If there's only one segment (no '/'), return it as-is
+            if #segments == 1 then
+                return segments[1]
+            end
+
+            -- Capitalize the first segment and lowercase the rest (except the last one)
+            segments[1] = segments[1]:upper()     -- First segment uppercase
+            for i = 2, #segments - 1 do
+                segments[i] = segments[i]:lower() -- Other segments lowercase
+            end
+
+            -- Combine the first segments with no separator and add '›' before the last segment
+            local truncated_branch = table.concat(segments, '', 1, #segments - 1) .. '›' .. segments[#segments]
+
+            -- Ensure the final result doesn't exceed a maximum length
+            local max_total_length = 15
+            if #truncated_branch > max_total_length then
+                truncated_branch = truncated_branch:sub(1, max_total_length) .. '…'
+            end
+
+            return truncated_branch
+        end,
+        color = function()
+            local mode_color = get_mode_color()
+            return {
+                fg = mode_color,
+                gui = 'bold',
+            }
+        end,
+    }
+
+    ins_right(create_separator('right'))
+
+    ins_right(create_mode_based_component('progress', nil, colors.bg))
+
     lualine.setup(config)
 end
 

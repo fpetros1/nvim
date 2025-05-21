@@ -8,7 +8,6 @@ local modules = {
     'animation',
     'color',
     'line',
-    'fzf',
     'filemanager',
     'mini',
     'harpoon',
@@ -22,6 +21,8 @@ local modules = {
     'flash',
     'git',
     'move',
+    'fzf',
+    'quickfix'
 }
 
 for _, module in ipairs(modules) do
