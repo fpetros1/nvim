@@ -20,9 +20,9 @@ local modules = {
     'lsp',
     'flash',
     'git',
-    'move',
     'fzf',
-    'quickfix'
+    'quickfix',
+    'move',
 }
 
 for _, module in ipairs(modules) do

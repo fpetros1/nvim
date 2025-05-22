@@ -14,10 +14,10 @@ M.setup = function()
     move.setup({})
 
     local opts = { noremap = false, silent = true, remap = true }
-    vim.keymap.set('n', '<C-S-K>', ':MoveLine(-1)<CR>', opts)
-    vim.keymap.set('n', '<C-S-J>', ':MoveLine(1)<CR>', opts)
-    vim.keymap.set('v', '<C-S-K>', ':MoveBlock(-1)<CR>', opts)
-    vim.keymap.set('v', '<C-S-J>', ':MoveBlock(1)<CR>', opts)
+    vim.keymap.set('n', '<S-Up>', ':MoveLine(-1)<CR>', opts)
+    vim.keymap.set('n', '<S-Down>', ':MoveLine(1)<CR>', opts)
+    vim.keymap.set('v', '<S-Up>', ':MoveBlock(-1)<CR>', opts)
+    vim.keymap.set('v', '<S-Down>', ':MoveBlock(1)<CR>', opts)
 end
 
 return M

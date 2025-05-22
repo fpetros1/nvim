@@ -18,6 +18,12 @@ M.setup = function()
             nerd_font_variant = 'mono',
         },
         completion = {
+            list = {
+                selection = {
+                    preselect = false,
+                    auto_insert = true
+                }
+            },
             accept = {
                 create_undo_point = true,
                 auto_brackets = { enabled = true },
