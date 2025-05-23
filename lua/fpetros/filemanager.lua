@@ -1,11 +1,10 @@
 local has_oil, oil = pcall(require, 'oil')
 local has_oil_util, oil_util = pcall(require, 'oil.util')
-local has_oil_actions, actions = pcall(require, "oil.actions")
 
 local M = {}
 
 M.can_setup = function()
-    return has_oil and has_oil_util and has_oil_actions --has_neotree
+    return has_oil and has_oil_util
 end
 
 M.setup = function()
@@ -125,7 +124,7 @@ M.setup = function()
                     })
                 end)
             end,
-            desc = "telescope-file-browser.nvim replacement for netrw",
+            desc = "oil.nvim replacement for netrw",
         })
     end
 
@@ -137,22 +136,36 @@ M.setup = function()
         })
     end, { desc = "Open oil with preview" })
 
+    local close = function()
+        oil.discard_all_changes()
+        oil.close({ exit_if_last_buf = true })
+    end
+
     vim.api.nvim_create_autocmd("User", {
         pattern = "OilEnter",
-        callback = function()
+        callback = function(event)
             if oil_util.is_floating_win() then
-                vim.keymap.set({ 'n', 'v', 'i', 't' }, "<C-b>", actions.close.callback, {
-                    buffer = true,
+                vim.keymap.set({ 'n', 'v', 'i', 't' }, "<C-b>", close, {
+                    buffer = event.buf,
                 })
-                vim.keymap.set("n", "<Esc>", actions.close.callback, {
-                    buffer = true,
+                vim.keymap.set("n", "<Esc>", close, {
+                    buffer = event.buf,
                 })
-                vim.keymap.set("n", "q", actions.close.callback, {
-                    buffer = true,
+                vim.keymap.set("n", "q", close, {
+                    buffer = event.buf,
                 })
             end
         end,
     })
+
+    vim.api.nvim_create_autocmd(
+        { "ExitPre" },
+        {
+            callback = function(event)
+                oil.discard_all_changes()
+            end
+        }
+    )
 end
 
 return M

@@ -31,6 +31,7 @@ M.setup = function()
 
     local close_oil_if_applicable = function()
         if has_oil then
+            oil.discard_all_changes()
             oil.close({ exit_if_last_buf = true })
         end
     end
