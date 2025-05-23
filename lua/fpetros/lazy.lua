@@ -32,17 +32,12 @@ M.setup = function()
             opts = {}
         },
         {
-            "nvim-neo-tree/neo-tree.nvim",
-            branch = "v3.x",
-            dependencies = {
-                "nvim-lua/plenary.nvim",
-                "nvim-tree/nvim-web-devicons",
-                "MunifTanjim/nui.nvim",
-            }
-        },
-        {
             "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
             as = "lsp_lines"
+        },
+        {
+            "https://git.sr.ht/~adigitoleo/haunt.nvim",
+            as = "haunt"
         },
         { 'rcarriga/nvim-notify' },
         {
@@ -59,7 +54,6 @@ M.setup = function()
             "folke/lsp-trouble.nvim",
             dependencies = "nvim-tree/nvim-web-devicons",
         },
-        { "akinsho/toggleterm.nvim" },
         {
             "folke/flash.nvim",
             event = "VeryLazy",
@@ -125,6 +119,11 @@ M.setup = function()
         },
         'cxwx/specs.nvim',
         'stevearc/quicker.nvim',
+        {
+            'stevearc/oil.nvim',
+            dependencies = { 'nvim-tree/nvim-web-devicons' },
+            lazy = false,
+        }
     });
 end
 

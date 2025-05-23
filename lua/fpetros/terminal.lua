@@ -1,9 +1,9 @@
-local has_toggle_term, toggle_term = pcall(require, 'toggleterm')
+local has_haunt, haunt = pcall(require, 'haunt')
 
 local M = {}
 
 M.can_setup = function()
-    return toggle_term
+    return has_haunt
 end
 
 M.setup = function()
@@ -11,26 +11,37 @@ M.setup = function()
         return
     end
 
-    toggle_term.setup({})
+    haunt.setup()
 
-    function _G.set_terminal_keymaps()
-        local opts = { buffer = 0 }
-        vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
-    end
+    vim.keymap.set({ 'n', 'v', 'i' }, '<C-;>', '<cmd>HauntTerm<CR>')
+    vim.keymap.set({ 'n', 'v', 'i' }, '<C-:>', '<cmd>HauntTerm<CR>')
 
-    vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_terminal_keymaps()')
+    vim.api.nvim_create_autocmd(
+        { "TermOpen" },
+        {
+            callback = function(event)
+                vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], { buffer = event.buf })
+                vim.keymap.set({ 'n', 't', 'v' }, '<C-;>', [[<C-\><C-n>:q<CR>]], { buffer = event.buf })
+            end
+        }
+    )
 
-    local opts = {
-        desc = "Toggle Terminal"
-    }
-    local toggle_term_keybind = '<leader>;'
+    vim.api.nvim_create_user_command('HH', function(args)
+        haunt.help(args)
+    end, {
+        nargs = "?",
+        complete = "help",
+        desc = "Open neovim help of argument or word under cursor in floating window"
+    })
 
-    local exec_toggle_term = function()
-        vim.cmd('ToggleTerm<CR>')
-    end
-
-    vim.keymap.set('n', toggle_term_keybind, exec_toggle_term, opts)
-    vim.keymap.set('v', toggle_term_keybind, exec_toggle_term, opts)
+    vim.api.nvim_create_autocmd(
+        { "ExitPre" },
+        {
+            callback = function(event)
+                haunt.reset()
+            end
+        }
+    )
 end
 
 return M

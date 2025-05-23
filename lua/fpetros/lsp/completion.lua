@@ -69,7 +69,7 @@ M.setup = function()
                 scrollbar = false
             },
         },
-        cmdline = { sources = {} },
+        --        cmdline = { sources = {} },
         signature = {
             enabled = true,
             window = {

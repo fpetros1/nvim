@@ -1,37 +1,158 @@
-local has_neotree, neotree = pcall(require, 'neo-tree')
+local has_oil, oil = pcall(require, 'oil')
+local has_oil_util, oil_util = pcall(require, 'oil.util')
+local has_oil_actions, actions = pcall(require, "oil.actions")
 
 local M = {}
 
 M.can_setup = function()
-    return has_neotree
+    return has_oil and has_oil_util and has_oil_actions --has_neotree
 end
 
 M.setup = function()
     if not M.can_setup() then
         return
     end
-
-    neotree.setup({
-        close_if_last_window = true,
-        popup_border_style = "rounded",
-        filesystem = {
-            follow_current_file = {
-                enabled = true,
-                leave_dirs_open = true,
+    oil.setup({
+        default_file_explorer = false,
+        columns = {
+            'icon',
+            'size',
+        },
+        keymaps = {
+            ["g?"] = { "actions.show_help", mode = "n" },
+            ["<CR>"] = "actions.select",
+            ["<C-s>"] = { "actions.select", opts = { vertical = true } },
+            ["<C-h>"] = { "actions.select", opts = { horizontal = true } },
+            ["<C-t>"] = { "actions.select", opts = { tab = true } },
+            ["<C-p>"] = "actions.preview",
+            ["<C-c>"] = { "actions.close", mode = "n" },
+            ["<C-l>"] = "actions.refresh",
+            ["-"] = { "actions.parent", mode = "n" },
+            ["_"] = { "actions.open_cwd", mode = "n" },
+            ["`"] = { "actions.cd", mode = "n" },
+            ["~"] = { "actions.cd", opts = { scope = "tab" }, mode = "n" },
+            ["gs"] = { "actions.change_sort", mode = "n" },
+            ["gx"] = "actions.open_external",
+            ["H"] = { "actions.toggle_hidden", mode = "n" },
+            ["g\\"] = { "actions.toggle_trash", mode = "n" },
+        },
+        float = {
+            padding = 2,
+            max_width = 0.6,
+            max_height = 0,
+            border = "rounded",
+            win_options = {
+                winblend = 0,
+            },
+            -- optionally override the oil buffers window title with custom function: fun(winid: integer): string
+            get_win_title = nil,
+            -- preview_split: Split direction: "auto", "left", "right", "above", "below".
+            preview_split = "above",
+            -- This is the config that will be passed to nvim_open_win.
+            -- Change values here to customize the layout
+            override = function(conf)
+                return conf
+            end,
+        },
+        confirmation = {
+            max_width = 0.4,
+            min_width = { 40, 0.1 },
+            width = nil,
+            max_height = 0.4,
+            min_height = { 5, 0.1 },
+            height = nil,
+            border = "rounded",
+            win_options = {
+                winblend = 0,
             },
         },
-        window = {
-            position = 'float'
-        }
+        progress = {
+            max_width = 0.4,
+            min_width = { 40, 0.4 },
+            width = nil,
+            max_height = { 10, 0.4 },
+            min_height = { 5, 0.1 },
+            height = nil,
+            border = "rounded",
+            minimized_border = "none",
+            win_options = {
+                winblend = 0,
+            },
+        },
     })
 
-    local function toggle_neotree()
-        vim.cmd('Neotree toggle=true position=float reveal=true')
+    local hijack_netrw = function()
+        local netrw_bufname
+
+        -- clear FileExplorer appropriately to prevent netrw from launching on folders
+        -- netrw may or may not be loaded before telescope-file-browser config
+        -- conceptual credits to nvim-tree
+        pcall(vim.api.nvim_clear_autocmds, { group = "FileExplorer" })
+        vim.api.nvim_create_autocmd("VimEnter", {
+            pattern = "*",
+            once = true,
+            callback = function()
+                pcall(vim.api.nvim_clear_autocmds, { group = "FileExplorer" })
+            end,
+        })
+
+        vim.api.nvim_create_autocmd("BufEnter", {
+            pattern = "*",
+            callback = function()
+                vim.schedule(function()
+                    if vim.bo[0].filetype == "netrw" then
+                        return
+                    end
+                    local bufname = vim.api.nvim_buf_get_name(0)
+                    if vim.fn.isdirectory(bufname) == 0 then
+                        _, netrw_bufname = pcall(vim.fn.expand, "#:p:h")
+                        return
+                    end
+
+                    -- prevents reopening of file-browser if exiting without selecting a file
+                    if netrw_bufname == bufname then
+                        netrw_bufname = nil
+                        return
+                    else
+                        netrw_bufname = bufname
+                    end
+
+                    -- ensure no buffers remain with the directory name
+                    vim.api.nvim_set_option_value('bufhidden', 'wipe', { buf = 0 })
+
+                    oil.open_float(oil.get_current_dir(), {
+                        preview = {}
+                    })
+                end)
+            end,
+            desc = "telescope-file-browser.nvim replacement for netrw",
+        })
     end
 
-    vim.keymap.set('n', '<C-b>', toggle_neotree)
-    vim.keymap.set('v', '<C-b>', toggle_neotree)
-    vim.keymap.set('i', '<C-b>', toggle_neotree)
+    hijack_netrw()
+
+    vim.keymap.set("n", "<C-b>", function()
+        oil.open_float(oil.get_current_dir(), {
+            preview = {}
+        })
+    end, { desc = "Open oil with preview" })
+
+    vim.api.nvim_create_autocmd("User", {
+        pattern = "OilEnter",
+        callback = function()
+            if oil_util.is_floating_win() then
+                vim.keymap.set({ 'n', 'v', 'i', 't' }, "<C-b>", actions.close.callback, {
+                    buffer = true,
+                })
+                vim.keymap.set("n", "<Esc>", actions.close.callback, {
+                    buffer = true,
+                })
+                vim.keymap.set("n", "q", actions.close.callback, {
+                    buffer = true,
+                })
+            end
+        end,
+    })
 end
 
 return M
