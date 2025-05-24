@@ -1,16 +1,33 @@
 local has_oil, oil = pcall(require, 'oil')
 local has_oil_util, oil_util = pcall(require, 'oil.util')
+local color = require('fpetros.color')
 
+local is_open = false
 local M = {}
 
 M.can_setup = function()
     return has_oil and has_oil_util
 end
 
+M.is_open = function()
+    return is_open
+end
+
+M.close_if_open = function(discard_all_changes)
+    if M.can_setup and M.is_open() then
+        if discard_all_changes then
+            oil.discard_all_changes()
+        end
+        oil.close({ exit_if_last_buf = true })
+        is_open = false
+    end
+end
+
 M.setup = function()
     if not M.can_setup() then
         return
     end
+
     oil.setup({
         default_file_explorer = false,
         columns = {
@@ -121,7 +138,9 @@ M.setup = function()
 
                     oil.open_float(oil.get_current_dir(), {
                         preview = {}
-                    })
+                    }, function()
+                        is_open = true
+                    end)
                 end)
             end,
             desc = "oil.nvim replacement for netrw",
@@ -133,7 +152,9 @@ M.setup = function()
     vim.keymap.set("n", "<C-b>", function()
         oil.open_float(oil.get_current_dir(), {
             preview = {}
-        })
+        }, function()
+            is_open = true
+        end)
     end, { desc = "Open oil with preview" })
 
     local close = function()
@@ -166,6 +187,31 @@ M.setup = function()
             end
         }
     )
+
+    local palette = color.palette()
+
+    vim.api.nvim_set_hl(0, 'OilHidden', { fg = '#949494', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilDir', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilDirIcon', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilSocket', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilSocketHidden', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilLink', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilOrphanLink', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilLinkHidden', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilLinkTarget', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilOrphanLinkTarget', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilLinkTargetHidden', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilFile', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilFileHidden', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilCreate', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilDelete', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilMove', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilCopy', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilChange', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilRestore', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilPurge', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilThash', { fg = '#ebfafa', bg = palette.bg })
+    vim.api.nvim_set_hl(0, 'OilTrashSourcePath', { fg = '#ebfafa', bg = palette.bg })
 end
 
 return M

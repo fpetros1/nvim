@@ -1,16 +1,48 @@
 local has_transparent, transparent = pcall(require, 'transparent')
 local has_eldritch, eldritch = pcall(require, 'eldritch')
+local has_moonfly, moonfly = pcall(require, 'moonfly')
+local env = require('fpetros.config.env')
 
 local M = {}
 
 M.can_setup = function()
-    return has_transparent and has_eldritch
+    return has_transparent and (has_eldritch or has_moonfly)
+end
+
+M.palette = function()
+    if has_moonfly and env.colorscheme == 'moonfly' then
+        local palette = moonfly.palette
+
+        palette['fg'] = '#bdbdbd'
+
+        return palette
+    end
+
+    if has_eldritch and env.colorscheme == 'eldritch' then
+        return {
+            bg       = '#323449',
+            fg       = '#EBFAFA',
+            yellow   = '#F1FC79',
+            cyan     = '#04D1F9',
+            darkblue = '#081633',
+            green    = '#37F499',
+            orange   = '#F7C67F',
+            violet   = '#A9A1E1',
+            magenta  = '#A48CF2',
+            blue     = '#51afef',
+            red      = '#F16C75',
+        }
+    end
+
+    return {}
 end
 
 M.setup = function()
     if not M.can_setup() then
         return
     end
+
+    vim.cmd('TransparentEnable')
 
     vim.cmd("set pumblend=0")
 
@@ -33,7 +65,6 @@ M.setup = function()
     transparent.clear_prefix("Harpoon")
     transparent.clear_prefix("Git")
     transparent.clear_prefix("Float")
-    transparent.clear_prefix("Lua")
     transparent.clear_prefix("WhichKey")
     transparent.clear_prefix("Mini")
     transparent.clear_prefix("Lazy")
@@ -41,26 +72,33 @@ M.setup = function()
     transparent.clear_prefix("Noice")
     transparent.clear_prefix("QuickFix")
 
-    eldritch.setup({
-        transparent = vim.g.neovide == nil,
-        terminal_colors = true,
-        styles = {
-            comments = { italic = true },
-            keywords = { italic = true },
-            functions = {},
-            variables = {},
-            sidebars = "dark",
-            floats = "dark",
-        },
-        sidebars = { "qf", "help" },
-        hide_inactive_statusline = false,
-        dim_inactive = false,
-        lualine_bold = true,
-        on_colors = function() end,
-        on_highlights = function() end,
-    });
+    if has_eldritch then
+        eldritch.setup({
+            transparent = vim.g.neovide == nil,
+            terminal_colors = true,
+            styles = {
+                comments = { italic = true },
+                keywords = { italic = true },
+                functions = {},
+                variables = {},
+                sidebars = "dark",
+                floats = "dark",
+            },
+            sidebars = { "qf", "help" },
+            hide_inactive_statusline = false,
+            dim_inactive = false,
+            lualine_bold = true,
+            on_colors = function() end,
+            on_highlights = function() end,
+        });
+    end
 
-    vim.cmd("colorscheme eldritch")
+    if has_moonfly then
+        vim.g.moonflyTerminalColors = true
+        vim.g.moonflyTransparent = true
+    end
+
+    vim.cmd.colorscheme("moonfly")
 end
 
 return M

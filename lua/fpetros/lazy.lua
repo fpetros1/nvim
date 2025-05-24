@@ -15,13 +15,14 @@ M.setup = function()
         "mason-org/mason.nvim",
         "mason-org/mason-lspconfig.nvim",
         "neovim/nvim-lspconfig",
-        { "saghen/blink.cmp",    version = "1.*" },
+        { "saghen/blink.cmp",          version = "1.*" },
         "xiyaowong/transparent.nvim",
         {
             "eldritch-theme/eldritch.nvim",
             lazy = false,
             priority = 1000,
         },
+        { "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false, priority = 1001 },
         {
             'nvim-lualine/lualine.nvim',
             dependencies = { 'nvim-tree/nvim-web-devicons' }
@@ -117,7 +118,6 @@ M.setup = function()
             "karb94/neoscroll.nvim",
             as = 'neoscroll'
         },
-        'cxwx/specs.nvim',
         'stevearc/quicker.nvim',
         {
             'stevearc/oil.nvim',

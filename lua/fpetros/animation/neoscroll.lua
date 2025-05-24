@@ -3,7 +3,7 @@ local has_neoscroll, neoscroll = pcall(require, 'neoscroll')
 local M = {}
 
 M.can_setup = function()
-    return has_neoscroll
+    return has_neoscroll and not vim.g.neovide
 end
 
 M.setup = function()
@@ -11,7 +11,10 @@ M.setup = function()
         return
     end
 
-    neoscroll.setup({})
+    neoscroll.setup({
+        hide_cursor = false,
+        duration_multiplier = 0.01
+    })
 end
 
 return M

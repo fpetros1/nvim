@@ -1,4 +1,5 @@
 return {
+    colorscheme = 'moonfly',
     gui = {
         font = '', -- Example: undefined:style=Regular:h15
         neovide = {

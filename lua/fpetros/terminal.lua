@@ -37,7 +37,7 @@ M.setup = function()
     vim.api.nvim_create_autocmd(
         { "ExitPre" },
         {
-            callback = function(event)
+            callback = function(_)
                 haunt.reset()
             end
         }
