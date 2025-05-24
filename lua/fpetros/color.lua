@@ -1,6 +1,7 @@
 local has_transparent, transparent = pcall(require, 'transparent')
 local has_eldritch, eldritch = pcall(require, 'eldritch')
 local has_moonfly, moonfly = pcall(require, 'moonfly')
+local has_nightfly, nightfly = pcall(require, 'nightfly')
 local env = require('fpetros.config.env')
 
 local M = {}
@@ -14,6 +15,14 @@ M.palette = function()
         local palette = moonfly.palette
 
         palette['fg'] = '#bdbdbd'
+
+        return palette
+    end
+
+    if has_nightfly and env.colorscheme == 'nightfly' then
+        local palette = nightfly.palette
+
+        palette['fg'] = '#bdc1c6'
 
         return palette
     end
@@ -94,11 +103,24 @@ M.setup = function()
     end
 
     if has_moonfly then
+        vim.g.moonflyCursorColor = true
         vim.g.moonflyTerminalColors = true
         vim.g.moonflyTransparent = true
+        vim.g.moonflyNormalFloat = true
+        vim.g.moonflyVirtualTextColor = true
+        vim.g.moonflyWinSeparator = 2
     end
 
-    vim.cmd.colorscheme("moonfly")
+    if has_nightfly then
+        vim.g.nightflyCursorColor = true
+        vim.g.nightflyTerminalColors = true
+        vim.g.nightflyTransparent = true
+        vim.g.nightflyNormalFloat = true
+        vim.g.nightflyVirtualTextColor = true
+        vim.g.nightflyWinSeparator = 2
+    end
+
+    vim.cmd.colorscheme(env.colorscheme)
 end
 
 return M
