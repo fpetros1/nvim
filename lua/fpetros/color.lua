@@ -1,4 +1,3 @@
-local has_transparent, transparent = pcall(require, 'transparent')
 local has_eldritch, eldritch = pcall(require, 'eldritch')
 local has_moonfly, moonfly = pcall(require, 'moonfly')
 local has_nightfly, nightfly = pcall(require, 'nightfly')
@@ -7,7 +6,7 @@ local env = require('fpetros.config.env')
 local M = {}
 
 M.can_setup = function()
-    return has_transparent and (has_eldritch or has_moonfly)
+    return has_eldritch or has_moonfly or has_nightfly
 end
 
 M.palette = function()
@@ -50,36 +49,6 @@ M.setup = function()
     if not M.can_setup() then
         return
     end
-
-    vim.cmd('TransparentEnable')
-
-    vim.cmd("set pumblend=0")
-
-    transparent.setup({
-        extra_groups = {
-            "Pmenu",
-            "NeoTreeNormal",
-            "NeoTreeNormalNC",
-            "NormalFloat",
-            "NeoTreeTitleBar",
-            "NeoTreeFloatTitle",
-            'Noice',
-            'noice_lsp_docs',
-        },
-        exclude_groups = {
-        },
-    });
-
-    transparent.clear_prefix("Telescope")
-    transparent.clear_prefix("Harpoon")
-    transparent.clear_prefix("Git")
-    transparent.clear_prefix("Float")
-    transparent.clear_prefix("WhichKey")
-    transparent.clear_prefix("Mini")
-    transparent.clear_prefix("Lazy")
-    transparent.clear_prefix("Mason")
-    transparent.clear_prefix("Noice")
-    transparent.clear_prefix("QuickFix")
 
     if has_eldritch then
         eldritch.setup({
