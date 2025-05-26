@@ -122,7 +122,7 @@ M.setup = function()
         'stevearc/quicker.nvim',
         {
             'stevearc/oil.nvim',
-            dependencies = { 'nvim-tree/nvim-web-devicons' },
+            dependencies = { 'nvim-tree/nvim-web-devicons', 'refractalize/oil-git-status.nvim' },
             lazy = false,
         }
     });

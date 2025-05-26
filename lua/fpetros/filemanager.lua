@@ -1,12 +1,13 @@
 local has_oil, oil = pcall(require, 'oil')
 local has_oil_util, oil_util = pcall(require, 'oil.util')
+local has_oil_git, oil_git = pcall(require, 'oil-git-status')
 local color = require('fpetros.color')
 
 local is_open = false
 local M = {}
 
 M.can_setup = function()
-    return has_oil and has_oil_util
+    return has_oil and has_oil_util and has_oil_git
 end
 
 M.is_open = function()
@@ -30,6 +31,9 @@ M.setup = function()
 
     oil.setup({
         default_file_explorer = false,
+        win_options = {
+            signcolumn = 'yes:2'
+        },
         columns = {
             'icon',
             'size',
@@ -96,6 +100,8 @@ M.setup = function()
             },
         },
     })
+
+    oil_git.setup()
 
     local hijack_netrw = function()
         local netrw_bufname
@@ -212,6 +218,17 @@ M.setup = function()
     vim.api.nvim_set_hl(0, 'OilPurge', { fg = palette.crimson, bg = palette.bg })
     vim.api.nvim_set_hl(0, 'OilThash', { fg = palette.crimson, bg = palette.bg })
     vim.api.nvim_set_hl(0, 'OilTrashSourcePath', { fg = palette.crimson, bg = palette.bg })
+
+    vim.api.nvim_set_hl(0, 'OilGitStatusIndexUnmodified', { fg = palette.fg })
+    vim.api.nvim_set_hl(0, 'OilGitStatusIndexIgnored', { fg = palette.red })
+    vim.api.nvim_set_hl(0, 'OilGitStatusIndexUntracked', { fg = palette.grey50 })
+    vim.api.nvim_set_hl(0, 'OilGitStatusIndexAdded', { fg = palette.emerald })
+    vim.api.nvim_set_hl(0, 'OilGitStatusIndexCopied', { fg = palette.khaki })
+    vim.api.nvim_set_hl(0, 'OilGitStatusIndexDeleted', { fg = palette.red })
+    vim.api.nvim_set_hl(0, 'OilGitStatusIndexModified', { fg = palette.khaki })
+    vim.api.nvim_set_hl(0, 'OilGitStatusIndexRenamed', { fg = palette.khaki })
+    vim.api.nvim_set_hl(0, 'OilGitStatusIndexTypeChanged', { fg = palette.khaki })
+    vim.api.nvim_set_hl(0, 'OilGitStatusIndexUnmerged', { fg = palette.slate })
 end
 
 return M
