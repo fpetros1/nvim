@@ -52,7 +52,7 @@ M.setup = function()
         formatting.set_server({ client.name }, nil)
 
         local palette = color.palette()
-        vim.api.nvim_set_hl(0, "LspInlayHint", { fg = palette.green, bg = palette.grey16 })
+        vim.api.nvim_set_hl(0, "LspInlayHint", { fg = palette.slate or palette.grey_blue, bg = palette.bg })
     end
 
     diagnostic.setup()

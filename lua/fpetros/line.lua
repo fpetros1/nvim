@@ -30,25 +30,25 @@ M.setup = function()
             theme = {
                 replace = {
                     a = { fg = colors.fg, bg = colors.bg, gui = 'bold' },
-                    b = { fg = colors.fg, bg = colors.grey35 },
+                    b = { fg = colors.fg, bg = colors.grey35 or colors.gray_blue },
                 },
                 inactive = {
-                    a = { fg = colors.fg, bg = colors.grey39, gui = 'bold' },
-                    b = { fg = colors.fg, bg = colors.grey35 },
-                    c = { fg = colors.fg, bg = colors.grey16 },
+                    a = { fg = colors.fg, bg = colors.grey39 or colors.gray_blue, gui = 'bold' },
+                    b = { fg = colors.fg, bg = colors.grey35 or colors.gray_blue },
+                    c = { fg = colors.fg, bg = colors.grey16 or colors.gray_blue },
                 },
                 normal = {
                     a = { fg = colors.bg, bg = colors.lavender, gui = 'bold' },
-                    b = { fg = colors.fg, bg = colors.grey35 },
-                    c = { fg = colors.fg, bg = colors.grey16 },
+                    b = { fg = colors.fg, bg = colors.grey35 or colors.gray_blue },
+                    c = { fg = colors.fg, bg = colors.grey16 or colors.gray_blue },
                 },
                 visual = {
                     a = { fg = colors.bg, bg = colors.orange, gui = 'bold' },
-                    b = { fg = colors.fg, bg = colors.grey35 },
+                    b = { fg = colors.fg, bg = colors.grey35 or colors.gray_blue },
                 },
                 insert = {
                     a = { fg = colors.bg, bg = colors.emerald, gui = 'bold' },
-                    b = { fg = colors.fg, bg = colors.grey35 },
+                    b = { fg = colors.fg, bg = colors.grey35 or colors.gray_blue },
                 },
             },
             component_separators = "",

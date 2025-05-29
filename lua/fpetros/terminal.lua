@@ -14,7 +14,7 @@ M.setup = function()
     haunt.setup()
 
     vim.keymap.set({ 'n', 'v', 'i' }, '<C-;>', '<cmd>HauntTerm<CR>')
-    vim.keymap.set({ 'n', 'v', 'i' }, '<C-:>', '<cmd>HauntTerm<CR>')
+    vim.keymap.set({ 'n', 'v', 'i' }, '<C-;>', '<cmd>HauntTerm<CR>')
 
     vim.api.nvim_create_autocmd(
         { "TermOpen" },

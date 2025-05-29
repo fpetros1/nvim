@@ -23,7 +23,7 @@ M.setup = function()
         },
     });
 
-    local cmd = env.gui.neovide.background.enabled and "TransparentDisable" or "TransparentEnable"
+    local cmd = (vim.g.neovide and env.gui.neovide.background.enabled) and "TransparentDisable" or "TransparentEnable"
 
     vim.cmd(cmd)
 

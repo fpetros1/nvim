@@ -78,6 +78,7 @@ M.setup = function()
         vim.g.moonflyNormalFloat = true
         vim.g.moonflyVirtualTextColor = true
         vim.g.moonflyWinSeparator = 2
+        vim.g.moonflyUnderlineMatchParen = true
     end
 
     if has_nightfly then
@@ -87,6 +88,7 @@ M.setup = function()
         vim.g.nightflyNormalFloat = true
         vim.g.nightflyVirtualTextColor = true
         vim.g.nightflyWinSeparator = 2
+        vim.g.nightflyUnderlineMatchParen = true
     end
 
     vim.cmd.colorscheme(env.colorscheme)
