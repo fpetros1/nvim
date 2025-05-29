@@ -9,6 +9,7 @@ local bash_lsp = require('fpetros.lsp.bash')
 local formatting = require('fpetros.lsp.formatting')
 local trouble = require('fpetros.lsp.trouble')
 local env = require('fpetros.config.env')
+local color = require('fpetros.color')
 
 local M = {}
 
@@ -30,7 +31,7 @@ M.setup = function()
         end
     end
 
-    local lsp_attach = function(client, bufnr)
+    local lsp_on_attach = function(client, bufnr)
         local opts = { buffer = bufnr, remap = false }
 
         vim.keymap.set("n", "<leader>ca", function() fzf.lsp_code_actions({}) end, { desc = "LSP Code Actions" })
@@ -49,20 +50,42 @@ M.setup = function()
         vim.keymap.set("v", "<leader>ff", function() vim.lsp.buf.format() end, opts)
 
         formatting.set_server({ client.name }, nil)
+
+        local palette = color.palette()
+        vim.api.nvim_set_hl(0, "LspInlayHint", { fg = palette.green, bg = palette.grey16 })
     end
 
     diagnostic.setup()
 
-    local capabilities = completion.setup()
+    local completion_capabilities = completion.setup()
+    local capabilities = vim.version().minor < 11 and completion_capabilities or
+        vim.lsp.protocol.make_client_capabilities()
 
     vim.lsp.inlay_hint.enable(true)
+
     vim.lsp.config("*", {
-        on_attach = lsp_attach,
-        capabilities = vim.version().minor < 11 and capabilities or vim.lsp.protocol.make_client_capabilities()
+        capabilities = capabilities
     })
 
-    java_lsp.setup(capabilities, lsp_attach)
-    bash_lsp.setup(capabilities, lsp_attach)
+    local java_on_attach = java_lsp.setup(capabilities)
+    local bash_on_attach = bash_lsp.setup(capabilities)
+
+    vim.api.nvim_create_autocmd("LspAttach", {
+        pattern = "*",
+        callback = function(event)
+            local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+            if client then
+                lsp_on_attach(client, event.buf)
+
+                if client.name == 'jdtls' then
+                    java_on_attach(client, event.buf)
+                elseif client.name == 'bashls' then
+                    bash_on_attach(client, event.buf)
+                end
+            end
+        end,
+    })
 
     mason_lsp.setup({
         ensure_installed = ensure_installed,

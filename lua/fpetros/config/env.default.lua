@@ -34,12 +34,38 @@ return {
         ['jdtls'] = {
             enabled = false,
             settings = {
-                eclipse = {
-                    downloadSources = true,
-                },
-                configuration = {
-                    updateBuildConfiguration = 'interactive',
-                    runtimes = {}
+                java = {
+                    eclipse = {
+                        downloadSources = true,
+                    },
+                    configuration = {
+                        updateBuildConfiguration = "interactive",
+                        runtimes = {}
+                    },
+                    inlayHints = {
+                        parameterNames = {
+                            enabled = "literals"
+                        }
+                    },
+                    format = {
+                        enabled = false
+                    },
+                    jdt = {
+                        ls = {
+                            lombokSupport = {
+                                enabled = true
+                            }
+                        }
+                    },
+                    maven = {
+                        downloadSources = true
+                    },
+                    implementationsCodeLens = {
+                        enabled = true
+                    },
+                    referencesCodeLens = {
+                        enabled = true
+                    }
                 }
             }
         },

@@ -1,11 +1,12 @@
 local M = {}
 
-M.setup = function(capabilities, lsp_attach)
+M.setup = function(capabilities)
     vim.lsp.config("bashls", {
-        on_attach = lsp_attach,
         filetypes = { 'sh', 'zsh', 'bash' },
         capabilities = capabilities
     })
+
+    return function(_, _) end
 end
 
 return M

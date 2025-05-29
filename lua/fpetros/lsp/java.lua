@@ -1,4 +1,5 @@
 local has_fzf, fzf = pcall(require, 'fzf-lua')
+local has_haunt, haunt = pcall(require, 'haunt')
 
 local formatting = require('fpetros.lsp.formatting')
 local mason_utils = require('fpetros.utils.mason')
@@ -14,15 +15,16 @@ M.can_setup = function()
     return env.lsp.jdtls and
         env.lsp.jdtls.enabled and
         env.lsp.jdtls.settings and
-        env.lsp.jdtls.settings.configuration and
-        env.lsp.jdtls.settings.configuration.runtimes and
+        env.lsp.jdtls.settings.java and
+        env.lsp.jdtls.settings.java.configuration and
+        env.lsp.jdtls.settings.java.configuration.runtimes and
         mason_utils and
         formatting
 end
 
-M.setup = function(capabilities, lsp_attach)
+M.setup = function(capabilities)
     if not M.can_setup() then
-        return {}
+        return function() end
     end
 
     mason_utils.ensure_installed({
@@ -50,7 +52,7 @@ M.setup = function(capabilities, lsp_attach)
                     vim.cmd('noautocmd write')
                     return
                 end
-                vim.notify(obj.stderr)
+                vim.notify(obj.stderr, vim.log.levels.ERROR)
             end)
         end
 
@@ -61,6 +63,81 @@ M.setup = function(capabilities, lsp_attach)
         done_format(obj)
     end
 
+    local on_attach = function(client, bufnr)
+        local opts = { buffer = bufnr, remap = true }
+
+        vim.keymap.set("n", "<leader>ff", format_code_using_google, opts)
+        vim.keymap.set("v", "<leader>ff", format_code_using_google, opts)
+        vim.keymap.set({ "n", "v" }, "<leader>jvm", M.choose_java_version, opts)
+        vim.keymap.set({ "n", "v" }, "<leader>jjvm", function()
+            local default_java = M.get_default_java_version()
+            vim.notify('Java Runtime: ' .. default_java)
+        end, opts)
+
+        if vim.treesitter and has_haunt then
+            vim.keymap.set({ 'n', 'v' }, '<leader>ttc', function()
+                local file_parts = vim.split(vim.fn.expand('%:r'), '/')
+
+                local runtimes = published_configuration[client.root_dir].java.configuration.runtimes
+                local default_runtime = vim.tbl_filter(function(value) return value.default == true end, runtimes)[1]
+
+                local test_descriptor = file_parts[#file_parts]
+
+                local test_cmd = 'JAVA_HOME="' .. default_runtime.path .. '" mvn test -Dtest=' .. test_descriptor
+
+                haunt.term({
+                    fargs = {
+                        vim.o.shell,
+                        '-c',
+                        test_cmd .. '; echo "Press any button to continue..." && read dummy'
+                    }
+                })
+            end, opts)
+
+            vim.keymap.set({ 'n', 'v' }, '<leader>ttf', function()
+                local current_node = vim.treesitter.get_node({ bufnr = bufnr })
+
+                if not current_node then return "" end
+
+                local expr = current_node
+
+                while expr do
+                    if expr:type() == 'method_declaration' then
+                        break
+                    end
+                    expr = expr:parent()
+                end
+
+                if not expr then return "" end
+
+                local function_name = (vim.treesitter.get_node_text(expr:field('name')[1], bufnr))
+                local file_parts = vim.split(vim.fn.expand('%:r'), '/')
+                local test_descriptor = file_parts[#file_parts] .. '#' .. function_name
+
+                local runtimes = published_configuration[client.root_dir].java.configuration.runtimes
+
+                local default_runtime = vim.tbl_filter(function(value) return value.default == true end, runtimes)[1]
+
+                local test_cmd = 'JAVA_HOME="' .. default_runtime.path .. '" mvn test -Dtest=' .. test_descriptor
+
+                haunt.term({
+                    fargs = {
+                        vim.o.shell,
+                        '-c',
+                        test_cmd .. '; echo "Press any button to continue..." && read dummy'
+                    }
+                })
+            end, opts)
+        end
+
+        formatting.set_server({ 'jdtls' }, format_code_using_google)
+
+        local initial_config = vim.deepcopy(env.lsp.jdtls.settings)
+
+        initial_config = M.set_default_java_version_from_file(initial_config, client)
+        M.update_client_configuration(initial_config, client, true)
+    end
+
     local java_cmd = vim.lsp.config.jdtls.cmd
     local lombok_path = vim.fn.stdpath("data") .. "/mason/packages/lombok/lombok.jar"
 
@@ -68,33 +145,12 @@ M.setup = function(capabilities, lsp_attach)
         '--jvm-arg=-javaagent:' .. lombok_path)
 
     vim.lsp.config('jdtls', {
-        on_attach = function(client, bufnr)
-            lsp_attach(client, bufnr)
-
-            local opts = { buffer = bufnr, remap = true }
-
-            vim.keymap.set("n", "<leader>ff", format_code_using_google, opts)
-            vim.keymap.set("v", "<leader>ff", format_code_using_google, opts)
-            vim.keymap.set({ "n", "v" }, "<leader>jvm", M.choose_java_version, opts)
-            vim.keymap.set({ "n", "v" }, "<leader>jjvm", function()
-                local default_java = M.get_default_java_version()
-                vim.notify('Java Runtime: ' .. default_java)
-            end, opts)
-
-            formatting.set_server({ 'jdtls' }, format_code_using_google)
-
-            local initial_config = vim.deepcopy(env.lsp.jdtls.settings)
-
-            initial_config = M.set_default_java_version_from_file(initial_config, client)
-            M.update_client_configuration(initial_config, client, true)
-        end,
-        capabilities = capabilities,
         cmd = java_cmd,
+        capabilities = capabilities,
+        settings = { settings = env.lsp.jdtls.settings },
     })
 
-    return {
-        'jdtls'
-    }
+    return on_attach
 end
 
 M.choose_java_version = function()
@@ -131,21 +187,21 @@ M.choose_java_version = function()
 end
 
 M.update_default_java = function(java_config, default_java_version)
-    for _, runtime in ipairs(java_config.configuration.runtimes) do
+    for _, runtime in ipairs(java_config.java.configuration.runtimes) do
         runtime.default = runtime.name == default_java_version and true or false
     end
 
     local has_default = false
 
-    for _, runtime in ipairs(java_config.configuration.runtimes) do
+    for _, runtime in ipairs(java_config.java.configuration.runtimes) do
         if runtime.default then
             has_default = true
             break
         end
     end
 
-    if not has_default and #java_config.configuration.runtimes > 0 then
-        java_config.configuration.runtimes[1].default = true
+    if not has_default and #java_config.java.configuration.runtimes > 0 then
+        java_config.java.configuration.runtimes[1].default = true
     end
 
     return java_config
@@ -204,7 +260,7 @@ M.set_default_java_version_from_file = function(java_config, client)
 end
 
 M.get_default_java_version_from_config = function()
-    for _, runtime in ipairs(env.lsp.jdtls.settings.configuration.runtimes) do
+    for _, runtime in ipairs(env.lsp.jdtls.settings.java.configuration.runtimes) do
         if runtime.default then
             return runtime.name
         end
@@ -217,7 +273,7 @@ M.get_default_java_version = function()
     local buf_client = vim.lsp.get_clients({ name = 'jdtls', bufnr = 0 })[1]
     local current_config = published_configuration[buf_client.root_dir]
 
-    for _, runtime in ipairs(current_config.configuration.runtimes) do
+    for _, runtime in ipairs(current_config.java.configuration.runtimes) do
         if runtime.default then
             return runtime.name
         end
@@ -229,7 +285,7 @@ end
 M.get_java_versions = function()
     return vim.tbl_map(function(runtime)
         return runtime.name
-    end, env.lsp.jdtls.settings.configuration.runtimes)
+    end, env.lsp.jdtls.settings.java.configuration.runtimes)
 end
 
 return M
