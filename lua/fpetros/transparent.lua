@@ -1,3 +1,4 @@
+local env = require('fpetros.config.env')
 local has_transparent, transparent = pcall(require, 'transparent')
 
 local M = {}
@@ -22,7 +23,9 @@ M.setup = function()
         },
     });
 
-    vim.cmd('TransparentEnable')
+    local cmd = env.gui.neovide.background.enabled and "TransparentDisable" or "TransparentEnable"
+
+    vim.cmd(cmd)
 
     vim.cmd("set pumblend=0")
 

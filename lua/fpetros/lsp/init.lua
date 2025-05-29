@@ -55,9 +55,10 @@ M.setup = function()
 
     local capabilities = completion.setup()
 
+    vim.lsp.inlay_hint.enable(true)
     vim.lsp.config("*", {
         on_attach = lsp_attach,
-        capabilities = capabilities
+        capabilities = vim.version().minor < 11 and capabilities or vim.lsp.protocol.make_client_capabilities()
     })
 
     java_lsp.setup(capabilities, lsp_attach)

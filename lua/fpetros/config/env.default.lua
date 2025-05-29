@@ -5,7 +5,7 @@ return {
         neovide = {
             transparency = {
                 enabled = true,
-                value = 0.85
+                value = 0.8
             },
             background = {
                 enabled = true
