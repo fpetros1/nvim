@@ -8,6 +8,7 @@ local env = require('fpetros.config.env')
 local java_version_file = '.java.version'
 
 local published_configuration = {}
+local dependency_classpath = {}
 
 local M = {}
 
@@ -74,60 +75,124 @@ M.setup = function(capabilities)
             vim.notify('Java Runtime: ' .. default_java)
         end, opts)
 
-        if vim.treesitter and has_haunt then
-            vim.keymap.set({ 'n', 'v' }, '<leader>ttc', function()
-                local file_parts = vim.split(vim.fn.expand('%:r'), '/')
+        if vim.treesitter then
+            vim.keymap.set({ 'n', 'v' }, '<leader>gsv', function()
+                if dependency_classpath[client.root_dir] then
+                    local current_node = vim.treesitter.get_node({ bufnr = bufnr })
 
-                local runtimes = published_configuration[client.root_dir].java.configuration.runtimes
-                local default_runtime = vim.tbl_filter(function(value) return value.default == true end, runtimes)[1]
+                    if not current_node then return "" end
 
-                local test_descriptor = file_parts[#file_parts]
+                    local expr = current_node
 
-                local test_cmd = 'JAVA_HOME="' .. default_runtime.path .. '" mvn test -Dtest=' .. test_descriptor
-
-                haunt.term({
-                    fargs = {
-                        vim.o.shell,
-                        '-c',
-                        test_cmd .. '; echo "Press any button to continue..." && read dummy'
-                    }
-                })
-            end, opts)
-
-            vim.keymap.set({ 'n', 'v' }, '<leader>ttf', function()
-                local current_node = vim.treesitter.get_node({ bufnr = bufnr })
-
-                if not current_node then return "" end
-
-                local expr = current_node
-
-                while expr do
-                    if expr:type() == 'method_declaration' then
-                        break
+                    while expr do
+                        if expr:type() == 'program' then
+                            break
+                        end
+                        expr = expr:parent()
                     end
-                    expr = expr:parent()
+
+                    if not expr then return "" end
+
+                    local shell = vim.o.shell
+                    local package_name = (vim.treesitter.get_node_text(expr:child(0):child(1), bufnr))
+                    local file_parts = vim.split(vim.fn.expand('%:r'), '/')
+                    local runtimes = published_configuration[client.root_dir].java.configuration.runtimes
+                    local default_runtime = vim.tbl_filter(function(value) return value.default == true end, runtimes)
+                        [1]
+                    local local_classpath = client.root_dir .. '/target/classes'
+                    local dep_classpath = dependency_classpath[client.root_dir]
+
+                    local cmd = {
+                        shell,
+                        '-c',
+                        default_runtime.path ..
+                        '/bin/serialver -classpath "' ..
+                        local_classpath .. ':' .. dep_classpath .. '" ' .. package_name .. '.' .. file_parts
+                        [#file_parts]
+                    }
+
+                    local result = vim.system(cmd, { text = true }):wait()
+
+                    if result.code == 0 then
+                        local text = '@Serial ' .. vim.trim(vim.split(
+                            vim.split(result.stdout, '\n', { plain = true, trimempty = true })[1], ':')[2])
+
+                        local buf = vim.api.nvim_create_buf(false, true)
+                        vim.api.nvim_set_option_value('filetype', 'java', { buf = buf })
+
+                        vim.api.nvim_buf_set_lines(buf, 0, -1, true, { text })
+
+                        vim.api.nvim_open_win(buf, true, {
+                            height = 2,
+                            win = 0,
+                            split = 'above'
+                        })
+
+                        return
+                    end
+
+                    vim.notify(result.stderr, vim.log.levels.ERROR)
+                    return
                 end
 
-                if not expr then return "" end
-
-                local function_name = (vim.treesitter.get_node_text(expr:field('name')[1], bufnr))
-                local file_parts = vim.split(vim.fn.expand('%:r'), '/')
-                local test_descriptor = file_parts[#file_parts] .. '#' .. function_name
-
-                local runtimes = published_configuration[client.root_dir].java.configuration.runtimes
-
-                local default_runtime = vim.tbl_filter(function(value) return value.default == true end, runtimes)[1]
-
-                local test_cmd = 'JAVA_HOME="' .. default_runtime.path .. '" mvn test -Dtest=' .. test_descriptor
-
-                haunt.term({
-                    fargs = {
-                        vim.o.shell,
-                        '-c',
-                        test_cmd .. '; echo "Press any button to continue..." && read dummy'
-                    }
-                })
+                vim.notify('Classpath still being processed...', vim.log.levels.WARN)
             end, opts)
+
+            if has_haunt then
+                vim.keymap.set({ 'n', 'v' }, '<leader>ttc', function()
+                    local file_parts = vim.split(vim.fn.expand('%:r'), '/')
+
+                    local runtimes = published_configuration[client.root_dir].java.configuration.runtimes
+                    local default_runtime = vim.tbl_filter(function(value) return value.default == true end, runtimes)
+                        [1]
+
+                    local test_descriptor = file_parts[#file_parts]
+
+                    local test_cmd = 'JAVA_HOME="' .. default_runtime.path .. '" mvn test -Dtest=' .. test_descriptor
+
+                    haunt.term({
+                        fargs = {
+                            vim.o.shell,
+                            '-c',
+                            test_cmd .. '; echo "Press any button to continue..." && read dummy'
+                        }
+                    })
+                end, opts)
+
+                vim.keymap.set({ 'n', 'v' }, '<leader>ttf', function()
+                    local current_node = vim.treesitter.get_node({ bufnr = bufnr })
+
+                    if not current_node then return "" end
+
+                    local expr = current_node
+
+                    while expr do
+                        if expr:type() == 'method_declaration' then
+                            break
+                        end
+                        expr = expr:parent()
+                    end
+
+                    if not expr then return "" end
+
+                    local function_name = (vim.treesitter.get_node_text(expr:field('name')[1], bufnr))
+                    local file_parts = vim.split(vim.fn.expand('%:r'), '/')
+                    local test_descriptor = file_parts[#file_parts] .. '#' .. function_name
+                    local runtimes = published_configuration[client.root_dir].java.configuration.runtimes
+                    local default_runtime = vim.tbl_filter(function(value) return value.default == true end, runtimes)
+                        [1]
+                    local java_home = 'JAVA_HOME="' .. default_runtime.path .. '"'
+                    local test_cmd = java_home .. ' mvn test -Dtest=' .. test_descriptor
+
+                    haunt.term({
+                        fargs = {
+                            vim.o.shell,
+                            '-c',
+                            test_cmd .. '; echo "Press any button to continue..." && read dummy'
+                        }
+                    })
+                end, opts)
+            end
         end
 
         formatting.set_server({ 'jdtls' }, format_code_using_google)
@@ -136,6 +201,31 @@ M.setup = function(capabilities)
 
         initial_config = M.set_default_java_version_from_file(initial_config, client)
         M.update_client_configuration(initial_config, client, true)
+
+        if not dependency_classpath[client.root_dir] then
+            local runtimes = published_configuration[client.root_dir].java.configuration.runtimes
+            local default_runtime = vim.tbl_filter(function(value) return value.default == true end, runtimes)[1]
+            local java_home = 'JAVA_HOME="' .. default_runtime.path .. '"'
+
+            local classpath_cmd = {
+                vim.o.shell,
+                '-c',
+                java_home ..
+                ' mvn -B -f ' ..
+                client.root_dir ..
+                ' dependency:build-classpath | sed -n "/Dependencies classpath:/,/[INFO]/p" | tail -n -1'
+            }
+
+            vim.system(classpath_cmd, { text = true }, function(classpath_result)
+                if classpath_result.code ~= 0 then
+                    vim.notify(classpath_result.stderr, vim.log.levels.ERROR)
+                    return
+                end
+
+                dependency_classpath[client.root_dir] = string.sub(classpath_result.stdout, 1,
+                    #classpath_result.stdout - 1)
+            end)
+        end
     end
 
     local java_cmd = vim.lsp.config.jdtls.cmd
