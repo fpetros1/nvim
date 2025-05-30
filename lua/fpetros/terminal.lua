@@ -11,7 +11,11 @@ M.setup = function()
         return
     end
 
-    haunt.setup()
+    haunt.setup({
+        window = {
+            winblend = 0
+        }
+    })
 
     vim.keymap.set({ 'n', 'v', 'i' }, '<C-;>', '<cmd>HauntTerm<CR>')
     vim.keymap.set({ 'n', 'v', 'i' }, '<C-;>', '<cmd>HauntTerm<CR>')
