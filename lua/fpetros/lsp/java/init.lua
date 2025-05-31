@@ -114,7 +114,7 @@ M.setup = function(capabilities)
                     local test_descriptor = file_parts[#file_parts]
                     local java_home = manager.get_default_java_version(client.root_dir)
 
-                    mvn.test(test_descriptor, java_home.path)
+                    mvn.test(test_descriptor, client.root_dir, java_home.path)
                 end, opts)
 
                 vim.keymap.set({ 'n', 'v' }, '<leader>ttf', function()
@@ -138,7 +138,7 @@ M.setup = function(capabilities)
                     local test_descriptor = file_parts[#file_parts] .. '#' .. function_name
                     local java_home = manager.get_default_java_version(client.root_dir)
 
-                    mvn.test(test_descriptor, java_home.path)
+                    mvn.test(test_descriptor, client.root_dir, java_home.path)
                 end, opts)
             end
         end

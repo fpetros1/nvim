@@ -42,10 +42,11 @@ M.get_dependency_classpath = function(root_dir, java_home)
     return dependency_classpath[root_dir]
 end
 
-M.test = function(test_descriptor, java_home)
+M.test = function(test_descriptor, root_dir, java_home)
     if has_haunt then
-        local test_cmd = table.concat({ _M.build_java_home(java_home), mvn_executable, 'test', '-Dtest=' ..
-        test_descriptor }, ' ')
+        local test_cmd = table.concat(
+            { _M.build_java_home(java_home), mvn_executable, '-f ' .. root_dir, 'test', '-Dtest=' ..
+            test_descriptor }, ' ')
 
         haunt.term({
             fargs = {
