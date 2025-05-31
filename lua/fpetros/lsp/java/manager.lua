@@ -1,4 +1,5 @@
 local env = require('fpetros.config.env')
+local mvn = require('fpetros.lsp.java.mvn')
 local has_fzf, fzf = pcall(require, 'fzf-lua')
 
 local M = {}
@@ -6,7 +7,6 @@ local M = {}
 local java_version_file = '.java.version'
 local cached_default_java_version = {}
 local published_configuration = {}
-local dependency_classpath = {}
 
 M.register_published_config = function(root_dir, config)
     published_configuration[root_dir] = config
@@ -14,35 +14,6 @@ end
 
 M.get_current_config = function(root_dir)
     return published_configuration[root_dir]
-end
-
-M.init_dependency_classpath = function(root_dir)
-    if not dependency_classpath[root_dir] then
-        local java_home = M.build_java_home(root_dir)
-
-        local classpath_cmd = {
-            vim.o.shell,
-            '-c',
-            java_home ..
-            ' mvn -B -f ' ..
-            root_dir ..
-            ' dependency:build-classpath | sed -n "/Dependencies classpath:/,/[INFO]/p" | tail -n -1'
-        }
-
-        vim.system(classpath_cmd, { text = true }, function(classpath_result)
-            if classpath_result.code ~= 0 then
-                vim.notify(classpath_result.stderr, vim.log.levels.ERROR)
-                return
-            end
-
-            dependency_classpath[root_dir] = string.sub(classpath_result.stdout, 1,
-                #classpath_result.stdout - 1)
-        end)
-    end
-end
-
-M.get_dependency_classpath = function(root_dir)
-    return dependency_classpath[root_dir]
 end
 
 M.update_default_java = function(java_config, default_java_version, root_dir)
@@ -169,10 +140,6 @@ M.choose_java_version = function()
             }
         })
     end
-end
-
-M.build_java_home = function(root_dir)
-    return 'JAVA_HOME="' .. M.get_default_java_version(root_dir).path .. '"'
 end
 
 return M
