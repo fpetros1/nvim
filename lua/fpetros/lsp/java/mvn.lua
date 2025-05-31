@@ -29,10 +29,13 @@ M.get_dependency_classpath = function(root_dir, java_home)
             for i, line in ipairs(classpath_result_lines) do
                 if string.find(line, 'Dependencies classpath:', 0, true) ~= nil then
                     classpath_data = classpath_result_lines[i + 1]
+                    break
                 end
             end
 
             dependency_classpath[root_dir] = classpath_data
+
+            vim.notify('Classpath is ready')
         end)
     end
 
