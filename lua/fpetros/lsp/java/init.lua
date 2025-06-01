@@ -1,7 +1,7 @@
-local has_haunt, haunt = pcall(require, 'haunt')
+local has_haunt, _ = pcall(require, 'haunt')
 
 local google_java_format = require('fpetros.lsp.java.google-java-format')
-local mvn = require('fpetros.lsp.java.mvn')
+local ts = require('fpetros.utils.ts')
 local manager = require('fpetros.lsp.java.manager')
 local formatting = require('fpetros.lsp.formatting')
 local mason_utils = require('fpetros.utils.mason')
@@ -47,26 +47,18 @@ M.setup = function(capabilities)
 
         if vim.treesitter then
             vim.keymap.set({ 'n', 'v' }, '<leader>gsv', function()
-                local dependency_classpath = mvn.get_dependency_classpath(client.root_dir,
-                    manager.get_default_java_version(client.root_dir).path)
+                local dependency_classpath = manager.get_dependency_classpath(client.root_dir)
+
                 if dependency_classpath then
-                    local current_node = vim.treesitter.get_node({ bufnr = bufnr })
+                    local program_node = ts.get_nearest_node({ 'program' }, { bufnr = bufnr })
 
-                    if not current_node then return "" end
-
-                    local expr = current_node
-
-                    while expr do
-                        if expr:type() == 'program' then
-                            break
-                        end
-                        expr = expr:parent()
+                    if not program_node then
+                        vim.notify('Could not obtain package name', vim.log.levels.ERROR)
+                        return
                     end
 
-                    if not expr then return "" end
-
                     local shell = vim.o.shell
-                    local package_name = (vim.treesitter.get_node_text(expr:child(0):child(1), bufnr))
+                    local package_name = ts.get_node_text(program_node:child(0):child(1), { bufnr = bufnr })
                     local file_parts = vim.split(vim.fn.expand('%:r'), '/')
                     local default_runtime = manager.get_default_java_version(client.root_dir)
                     local local_classpath = client.root_dir .. '/target/classes'
@@ -110,35 +102,24 @@ M.setup = function(capabilities)
             if has_haunt then
                 vim.keymap.set({ 'n', 'v' }, '<leader>ttc', function()
                     local file_parts = vim.split(vim.fn.expand('%:r'), '/')
-
                     local test_descriptor = file_parts[#file_parts]
-                    local java_home = manager.get_default_java_version(client.root_dir)
 
-                    mvn.test(test_descriptor, client.root_dir, java_home.path)
+                    manager.test(test_descriptor, client.root_dir)
                 end, opts)
 
                 vim.keymap.set({ 'n', 'v' }, '<leader>ttf', function()
-                    local current_node = vim.treesitter.get_node({ bufnr = bufnr })
+                    local method_declaration = ts.get_nearest_node({ 'method_declaration' }, { bufnr = bufnr })
 
-                    if not current_node then return "" end
-
-                    local expr = current_node
-
-                    while expr do
-                        if expr:type() == 'method_declaration' then
-                            break
-                        end
-                        expr = expr:parent()
+                    if not method_declaration then
+                        vim.notify('Could not find test method!', vim.log.levels.ERROR)
+                        return
                     end
 
-                    if not expr then return "" end
-
-                    local function_name = (vim.treesitter.get_node_text(expr:field('name')[1], bufnr))
+                    local function_name = ts.get_node_text(method_declaration:field('name')[1], { bufnr = bufnr })
                     local file_parts = vim.split(vim.fn.expand('%:r'), '/')
                     local test_descriptor = file_parts[#file_parts] .. '#' .. function_name
-                    local java_home = manager.get_default_java_version(client.root_dir)
 
-                    mvn.test(test_descriptor, client.root_dir, java_home.path)
+                    manager.test(test_descriptor, client.root_dir)
                 end, opts)
             end
         end
@@ -149,7 +130,8 @@ M.setup = function(capabilities)
 
         initial_config = manager.set_default_java_version_from_file(initial_config, client)
         manager.update_client_configuration(initial_config, client, true)
-        mvn.get_dependency_classpath(client.root_dir, manager.get_default_java_version(client.root_dir).path)
+        manager.setup_pacman(bufnr, client.root_dir)
+        manager.get_dependency_classpath(client.root_dir)
     end
 
     local java_cmd = vim.lsp.config.jdtls.cmd

@@ -16,6 +16,20 @@ M.get_current_config = function(root_dir)
     return published_configuration[root_dir]
 end
 
+M.test = function(test_descriptor, root_dir)
+    mvn.test(test_descriptor, root_dir, M.get_default_java_version(root_dir).path)
+end
+
+M.setup_pacman = function(bufnr, root_dir)
+    if mvn.can_setup() then
+        mvn.setup(bufnr, root_dir, M.get_default_java_version(root_dir).path)
+    end
+end
+
+M.get_dependency_classpath = function(root_dir)
+    return mvn.get_dependency_classpath(root_dir, M.get_default_java_version(root_dir).path)
+end
+
 M.update_default_java = function(java_config, default_java_version, root_dir)
     local has_default = false
 
