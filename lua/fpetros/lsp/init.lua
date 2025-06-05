@@ -53,6 +53,7 @@ M.setup = function()
 
         local palette = color.palette()
         vim.api.nvim_set_hl(0, "LspInlayHint", { fg = palette.slate or palette.grey_blue, bg = default })
+        vim.api.nvim_set_hl(0, 'MatchParen', { fg = palette.orange, bg = default, underline = true, bold = true })
     end
 
     diagnostic.setup()

@@ -6,7 +6,8 @@ M.setup = function()
 
     vim.opt.fillchars:append { eob = " " }
 
-    vim.opt.guicursor = ""
+    vim.opt.guicursor =
+    "n-v-c:hor50,i-ci-ve:ver50,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175"
     vim.o.mouse = "a"
 
     vim.opt.nu = true
@@ -16,6 +17,7 @@ M.setup = function()
     vim.opt.softtabstop = 4
     vim.opt.shiftwidth = 4
     vim.opt.expandtab = true
+    vim.cmd('set cursorline')
 
     vim.opt.smartindent = true
 

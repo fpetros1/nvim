@@ -38,6 +38,9 @@ return {
                     eclipse = {
                         downloadSources = true,
                     },
+                    contentProvider = {
+                        preferred = 'fernflower',
+                    },
                     configuration = {
                         updateBuildConfiguration = "interactive",
                         runtimes = {}
