@@ -1,30 +1,15 @@
 local env = require('fpetros.config.env')
 local mvn = require('fpetros.lsp.java.mvn')
+local os_utils = require('fpetros.utils.os_utils')
 local has_fzf, fzf = pcall(require, 'fzf-lua')
+local has_jdtls, jdtls = pcall(require, 'jdtls')
 
+local _M = {}
 local M = {}
 
 local java_version_file = '.java.version'
 local cached_default_java_version = {}
-local published_configuration = {}
-
-M.register_published_config = function(root_dir, config)
-    published_configuration[root_dir] = config
-end
-
-M.get_current_config = function(root_dir)
-    return published_configuration[root_dir]
-end
-
-M.test = function(test_descriptor, root_dir)
-    mvn.test(test_descriptor, root_dir, M.get_default_java_version(root_dir).path)
-end
-
-M.setup_pacman = function(bufnr, root_dir)
-    if mvn.can_setup() then
-        mvn.setup(bufnr, root_dir, M.get_default_java_version(root_dir).path)
-    end
-end
+local runtimes = {}
 
 M.get_dependency_classpath = function(root_dir)
     return mvn.get_dependency_classpath(root_dir, M.get_default_java_version(root_dir).path)
@@ -33,50 +18,44 @@ end
 M.update_default_java = function(java_config, default_java_version, root_dir)
     local has_default = false
 
-    for _, runtime in ipairs(java_config.java.configuration.runtimes) do
+    for _, runtime in ipairs(runtimes[root_dir]) do
         local is_default = runtime.name == default_java_version
         if is_default then
             cached_default_java_version[root_dir] = runtime
             runtime.default = true
             has_default = true
-            break
+            goto continue
         end
+        runtime.default = false
+        ::continue::
     end
 
-    if not has_default and #java_config.java.configuration.runtimes > 0 then
-        java_config.java.configuration.runtimes[1].default = true
+    if not has_default and #runtimes[root_dir] > 0 then
+        runtimes[root_dir].java.configuration.runtimes[1].default = true
+    end
+
+    if java_config then
+        java_config.java.configuration.runtimes = vim.deepcopy(runtimes[root_dir])
     end
 
     return java_config
 end
 
-M.update_client_configuration = function(java_config, client, update_file)
-    if not vim.deep_equal(java_config, published_configuration[client.root_dir]) then
-        local notificationResult = client:notify('workspace/didChangeConfiguration', {
-            settings = java_config
-        })
+M.update_version_file = function(root_dir)
+    local java_version_file_path = root_dir .. '/' .. java_version_file
+    local default_java_version = M.get_default_java_version(root_dir) or
+        M.get_default_java_version_from_config()
 
-        if notificationResult then
-            published_configuration[client.root_dir] = vim.deepcopy(java_config)
-
-            if update_file then
-                local java_version_file_path = client.root_dir .. '/' .. java_version_file
-                local default_java_version = M.get_default_java_version(client.root_dir) or
-                    M.get_default_java_version_from_config()
-
-                if default_java_version then
-                    local java_version_file_handle = assert(io.open(java_version_file_path, 'w'))
-                    java_version_file_handle:write(default_java_version.name)
-                    java_version_file_handle:flush()
-                    java_version_file_handle:close()
-                end
-            end
-        end
+    if default_java_version then
+        local java_version_file_handle = assert(io.open(java_version_file_path, 'w'))
+        java_version_file_handle:write(default_java_version.name)
+        java_version_file_handle:flush()
+        java_version_file_handle:close()
     end
 end
 
-M.get_default_java_version_from_file = function(client)
-    local java_version_file_path = client.root_dir .. '/' .. java_version_file
+M.get_default_java_version_from_file = function(root_dir)
+    local java_version_file_path = root_dir .. '/' .. java_version_file
 
     if (vim.uv or vim.loop).fs_stat(java_version_file_path) then
         local java_version_file_handle = assert(io.open(java_version_file_path, 'r'))
@@ -89,15 +68,15 @@ M.get_default_java_version_from_file = function(client)
     return nil
 end
 
-M.set_default_java_version_from_file = function(java_config, client)
-    local java_version_file_path = client.root_dir .. '/' .. java_version_file
+M.set_default_java_version_from_file = function(java_config, root_dir)
+    local java_version_file_path = root_dir .. '/' .. java_version_file
 
     if (vim.uv or vim.loop).fs_stat(java_version_file_path) then
         local java_version_file_handle = assert(io.open(java_version_file_path, 'r'))
         local default_java_version = java_version_file_handle:read('*all')
         java_version_file_handle:close()
 
-        return M.update_default_java(java_config, default_java_version, client.root_dir)
+        return M.update_default_java(java_config, default_java_version, root_dir)
     end
 
     return java_config
@@ -123,7 +102,7 @@ M.get_java_versions = function()
     end, env.lsp.jdtls.settings.java.configuration.runtimes)
 end
 
-M.choose_java_version = function()
+M.choose_java_version = function(root_dir)
     if has_fzf then
         fzf.fzf_exec(function(fzf_cb)
             for _, item in ipairs(M.get_java_versions()) do
@@ -137,18 +116,10 @@ M.choose_java_version = function()
             },
             actions = {
                 ['default'] = function(selected)
-                    local buf_client = vim.lsp.get_clients({ name = 'jdtls', bufnr = 0 })[1]
-
-                    if buf_client then
-                        local update_file = true
-                        for _, client in ipairs(vim.lsp.get_clients({ name = 'jdtls' })) do
-                            if buf_client.root_dir == client.root_dir then
-                                local current_config = vim.deepcopy(published_configuration[client.root_dir])
-                                current_config = M.update_default_java(current_config, selected[1], buf_client.root_dir)
-                                M.update_client_configuration(current_config, client, update_file)
-                                update_file = false
-                            end
-                        end
+                    M.update_default_java(nil, selected[1], root_dir)
+                    M.update_version_file(root_dir)
+                    if has_jdtls then
+                        jdtls.set_runtime(selected[1])
                     end
                 end
             }
@@ -156,4 +127,73 @@ M.choose_java_version = function()
     end
 end
 
-return M
+--
+
+M.get_root_dir = function()
+    return vim.fs.root(0, { '.git', 'pom.xml', 'mvnw', 'gradlew', 'build.gradle' })
+end
+
+M.init_runtimes = function(java_config, root_dir)
+    runtimes[root_dir] = vim.deepcopy(java_config.java.configuration.runtimes)
+end
+
+M.build_jdtls_cmd = function(root_dir)
+    local lombok_path = _M.get_lombok_jar()
+    local project_name = vim.fn.fnamemodify(root_dir, ':p:h:t')
+    local lsp_path = _M.get_jdtls_jar()
+
+    return {
+        'java',
+        '-Declipse.application=org.eclipse.jdt.ls.core.id1',
+        '-Dosgi.bundles.defaultStartLevel=4',
+        '-Declipse.product=org.eclipse.jdt.ls.core.product',
+        '-Dlog.protocol=true',
+        '-Dlog.level=ALL',
+        '-Xmx1g',
+        '--add-modules=ALL-SYSTEM',
+        '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+        '-javaagent:' .. lombok_path,
+        '-jar', lsp_path,
+        '-configuration', _M.get_config_folder(),
+        '-data', _M.get_project_workspace(project_name)
+    }
+end
+
+M.get_java_debug_bundle = function()
+    return vim.split(vim.fn.glob(vim.fn.stdpath('data') .. '/mason/share/java-debug-adapter/*.jar'), '\n')
+end
+
+M.get_java_test_bundle = function()
+    return vim.split(vim.fn.glob(vim.fn.stdpath('data') .. '/mason/share/java-test/*.jar'), '\n')
+end
+
+_M.get_lombok_jar = function()
+    return vim.fn.stdpath("data") .. "/mason/packages/lombok/lombok.jar"
+end
+
+_M.get_jdtls_jar = function()
+    return vim.fn.stdpath('data') ..
+        '/mason/share/jdtls/plugins/org.eclipse.equinox.launcher.jar'
+end
+
+_M.get_project_workspace = function(project_name)
+    return vim.fn.stdpath('data') .. '/workspace/jdtls/' .. project_name
+end
+
+_M.get_config_folder = function()
+    local _, os_arch = os_utils.get_os_params()
+    local config_folder = vim.fn.stdpath('data') .. '/mason/share/jdtls/config'
+
+    if os_arch == 'arm' then
+        config_folder = config_folder .. '/arm'
+    end
+
+    return config_folder
+end
+
+_M.get_root_dir_from_client = function(client)
+    return client.root_dir or client['Root directory']
+end
+
+return M, _M

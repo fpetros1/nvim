@@ -21,19 +21,22 @@ M.set_server = function(server_list, format_func)
 end
 
 M.setup = function()
-    vim.api.nvim_create_autocmd('BufWritePre', {
+    vim.api.nvim_create_autocmd('LspAttach', {
         group = formatting_group,
-        desc = 'Format enabled LSP files',
-        callback = function(event)
-            local clients = vim.lsp.get_clients({ bufnr = event.buf })
+        desc = 'Activate Formatting for LSP',
+        callback = function(attach_event)
+            local client = vim.lsp.get_client_by_id(attach_event.data.client_id)
 
-            for _, client in ipairs(clients) do
-                local lsp_config = client.config
-
-                if servers[lsp_config.name] ~= nil and vim.tbl_contains(lsp_config.filetypes, vim.o.filetype) then
-                    servers[lsp_config.name](event)
+            vim.api.nvim_create_autocmd('BufWritePre', {
+                group = formatting_group,
+                desc = 'Format enabled LSP files',
+                buffer = attach_event.buf,
+                callback = function(event)
+                    if client and servers[client.config.name] then
+                        servers[client.config.name](event)
+                    end
                 end
-            end
+            })
         end
     })
 end

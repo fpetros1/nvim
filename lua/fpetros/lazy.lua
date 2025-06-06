@@ -124,6 +124,12 @@ M.setup = function()
             'stevearc/oil.nvim',
             dependencies = { 'nvim-tree/nvim-web-devicons', 'refractalize/oil-git-status.nvim' },
             lazy = false,
+        },
+        {
+            'mfussenegger/nvim-jdtls',
+            dependencies = {
+                'mfussenegger/nvim-dap'
+            }
         }
     });
 end

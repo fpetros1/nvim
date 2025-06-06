@@ -24,6 +24,9 @@ M.setup = function()
     end
 
     local ensure_installed = {}
+    local skip_formatting = {
+        'jdtls'
+    }
 
     for server, config in pairs(env.lsp) do
         if config.enabled then
@@ -46,10 +49,11 @@ M.setup = function()
         vim.keymap.set("n", "<leader>rr", function() vim.lsp.buf.references() end, opts)
         vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end, opts)
 
-        vim.keymap.set("n", "<leader>ff", function() vim.lsp.buf.format() end, opts)
-        vim.keymap.set("v", "<leader>ff", function() vim.lsp.buf.format() end, opts)
+        vim.keymap.set({ "n", "v" }, "<leader>ff", function() vim.lsp.buf.format() end, opts)
 
-        formatting.set_server({ client.name }, nil)
+        if not vim.tbl_contains(skip_formatting, client.name) then
+            formatting.set_server({ client.name }, nil)
+        end
 
         local palette = color.palette()
         vim.api.nvim_set_hl(0, "LspInlayHint", { fg = palette.slate or palette.grey_blue, bg = default })
@@ -80,9 +84,13 @@ M.setup = function()
                 lsp_on_attach(client, event.buf)
 
                 if client.name == 'jdtls' then
-                    java_on_attach(client, event.buf)
-                elseif client.name == 'bashls' then
+                    java_on_attach(event)
+                    return
+                end
+
+                if client.name == 'bashls' then
                     bash_on_attach(client, event.buf)
+                    return
                 end
             end
         end,
@@ -90,6 +98,11 @@ M.setup = function()
 
     mason_lsp.setup({
         ensure_installed = ensure_installed,
+        automatic_enable = {
+            exclude = {
+                "jdtls",
+            }
+        }
     })
 
     formatting.setup()
