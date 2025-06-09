@@ -2,11 +2,13 @@ local has_lspconfig, _ = pcall(require, 'lspconfig')
 local has_mason, _ = pcall(require, 'mason')
 local has_mason_lsp, mason_lsp = pcall(require, 'mason-lspconfig')
 local has_fzf, fzf = pcall(require, 'fzf-lua')
+local lazydev = require('fpetros.lsp.lazydev')
 local diagnostic = require('fpetros.lsp.diagnostic')
 local completion = require('fpetros.lsp.completion')
 local java_lsp = require('fpetros.lsp.java')
 local bash_lsp = require('fpetros.lsp.bash')
 local formatting = require('fpetros.lsp.formatting')
+local debugging = require('fpetros.lsp.debug')
 local trouble = require('fpetros.lsp.trouble')
 local env = require('fpetros.config.env')
 local color = require('fpetros.color')
@@ -22,6 +24,8 @@ M.setup = function()
     if not M.can_setup() then
         return
     end
+
+    lazydev.setup()
 
     local ensure_installed = {}
     local skip_formatting = {
@@ -82,6 +86,7 @@ M.setup = function()
 
             if client then
                 lsp_on_attach(client, event.buf)
+                debugging.setup(event)
 
                 if client.name == 'jdtls' then
                     java_on_attach(event)

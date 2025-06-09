@@ -23,7 +23,7 @@ local modules = {
     'fzf',
     'quickfix',
     'move',
-    'transparent'
+    'transparent',
 }
 
 for _, module in ipairs(modules) do
