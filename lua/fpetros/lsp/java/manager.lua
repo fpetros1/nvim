@@ -38,6 +38,8 @@ M.update_default_java = function(java_config, default_java_version, root_dir)
         java_config.java.configuration.runtimes = vim.deepcopy(runtimes[root_dir])
     end
 
+    M.update_version_file(root_dir)
+
     return java_config
 end
 
@@ -78,6 +80,8 @@ M.set_default_java_version_from_file = function(java_config, root_dir)
 
         return M.update_default_java(java_config, default_java_version, root_dir)
     end
+
+    M.update_default_java(java_config, M.get_default_java_version_from_config().name, root_dir)
 
     return java_config
 end

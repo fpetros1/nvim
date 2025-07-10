@@ -3,6 +3,7 @@ local has_haunt, haunt = pcall(require, 'haunt')
 local _M = {}
 local M = {}
 local dependency_classpath = {}
+local updating_classpath = {}
 
 local mvn_executable = 'mvn'
 
@@ -49,6 +50,7 @@ end
 
 M.get_dependency_classpath = function(root_dir, java_home)
     if not dependency_classpath[root_dir] then
+        updating_classpath[root_dir] = true
         vim.notify('Updating classpath...')
 
         local classpath_cmd = {
@@ -78,6 +80,7 @@ M.get_dependency_classpath = function(root_dir, java_home)
 
             dependency_classpath[root_dir] = classpath_data
 
+            updating_classpath[root_dir] = false
             vim.notify('Classpath is ready!')
         end)
     end
