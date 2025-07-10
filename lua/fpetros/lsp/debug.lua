@@ -54,10 +54,10 @@ M.setup = function(attach_event)
             dap_ui.open()
         end
         dap.listeners.before.event_terminated.dapui_config = function()
-            dap_ui.close()
+            --            dap_ui.close()
         end
         dap.listeners.before.event_exited.dapui_config = function()
-            dap_ui.close()
+            --           dap_ui.close()
         end
     end
 end
