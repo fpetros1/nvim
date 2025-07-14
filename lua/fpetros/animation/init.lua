@@ -1,5 +1,6 @@
 local submodules = {
-    require('fpetros.animation.neoscroll')
+    require('fpetros.animation.neoscroll'),
+    require('fpetros.animation.smear'),
 }
 
 local M = {}
