@@ -29,6 +29,9 @@ M.setup = function()
             "javascript",
             "angular" },
     })
+
+    vim.cmd('TSEnable highlight')
+    vim.cmd('TSEnable indent')
 end
 
 return M
