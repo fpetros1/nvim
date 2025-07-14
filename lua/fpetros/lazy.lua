@@ -131,7 +131,8 @@ M.setup = function()
                 { "rcarriga/nvim-dap-ui", dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } }
             }
         },
-        'folke/lazydev.nvim'
+        'folke/lazydev.nvim',
+        'sphamba/smear-cursor.nvim'
     });
 end
 
