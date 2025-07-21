@@ -12,9 +12,10 @@ M.setup = function()
     end
 
     smear.setup({
-        cursor_color = "#b2ceee",
-        normal_bg = "#011627",
-        legacy_computing_symbols_support = true,
+        stiffness = 0.5,
+        trailing_stiffness = 0.5,
+        damping = 0.67,
+        matrix_pixel_threshold = 0.5,
     })
 end
 
