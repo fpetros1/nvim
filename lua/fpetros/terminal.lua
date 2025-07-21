@@ -17,15 +17,14 @@ M.setup = function()
         }
     })
 
-    vim.keymap.set({ 'n', 'v', 'i' }, '<C-;>', '<cmd>HauntTerm<CR>')
-    vim.keymap.set({ 'n', 'v', 'i' }, '<C-;>', '<cmd>HauntTerm<CR>')
+    vim.keymap.set({ 'n', 'v', 'i' }, '<C-P>', '<cmd>HauntTerm<CR>')
 
     vim.api.nvim_create_autocmd(
         { "TermOpen" },
         {
             callback = function(event)
                 vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], { buffer = event.buf })
-                vim.keymap.set({ 'n', 't', 'v' }, '<C-;>', [[<C-\><C-n>:q<CR>]], { buffer = event.buf })
+                vim.keymap.set({ 'n', 't', 'v' }, '<C-P>', [[<C-\><C-n>:q<CR>]], { buffer = event.buf })
             end
         }
     )
