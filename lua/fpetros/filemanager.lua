@@ -106,9 +106,6 @@ M.setup = function()
     local hijack_netrw = function()
         local netrw_bufname
 
-        -- clear FileExplorer appropriately to prevent netrw from launching on folders
-        -- netrw may or may not be loaded before telescope-file-browser config
-        -- conceptual credits to nvim-tree
         pcall(vim.api.nvim_clear_autocmds, { group = "FileExplorer" })
         vim.api.nvim_create_autocmd("VimEnter", {
             pattern = "*",
@@ -140,7 +137,7 @@ M.setup = function()
                     end
 
                     -- ensure no buffers remain with the directory name
-                    vim.api.nvim_set_option_value('bufhidden', 'wipe', { buf = 0 })
+                    --vim.api.nvim_set_option_value('bufhidden', 'wipe', { buf = 0 })
 
                     oil.open_float(oil.get_current_dir(), {
                         preview = {}
