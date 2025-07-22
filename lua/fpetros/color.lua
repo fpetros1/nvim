@@ -79,7 +79,6 @@ M.setup = function()
     end
 
     if has_moonfly and env.colorscheme == 'moonfly' then
-        moonfly.setup()
         vim.g.moonflyCursorColor = true
         vim.g.moonflyTerminalColors = true
         vim.g.moonflyTransparent = true
@@ -90,7 +89,6 @@ M.setup = function()
     end
 
     if has_nightfly and env.colorscheme == 'nightfly' then
-        nightfly.setup()
         vim.g.nightflyCursorColor = true
         vim.g.nightflyTerminalColors = true
         vim.g.nightflyTransparent = true
