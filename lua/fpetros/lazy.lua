@@ -30,11 +30,11 @@ M.setup = function()
             dependencies = { 'nvim-tree/nvim-web-devicons' }
         },
         {
-            "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+            "https://codeberg.org/fpetros/lsp_lines.nvim.git",
             as = "lsp_lines"
         },
         {
-            "https://git.sr.ht/~adigitoleo/haunt.nvim",
+            "adigitoleo/haunt.nvim",
             as = "haunt"
         },
         { 'rcarriga/nvim-notify' },
