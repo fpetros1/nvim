@@ -1,5 +1,6 @@
 local has_lualine, lualine = pcall(require, 'lualine')
 local color = require('fpetros.color')
+local env = require('fpetros.config.env')
 
 local M = {}
 
@@ -27,7 +28,7 @@ M.setup = function()
 
     lualine.setup({
         options = {
-            theme = {
+            theme = env.colorscheme == 'tokyonight' and 'tokyonight' or {
                 replace = {
                     a = { fg = colors.fg, bg = colors.bg, gui = 'bold' },
                     b = { fg = colors.fg, bg = colors.grey35 or colors.gray_blue },

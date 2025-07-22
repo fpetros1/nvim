@@ -18,9 +18,10 @@ M.setup = function()
         { "saghen/blink.cmp",           version = "1.*" },
         "xiyaowong/transparent.nvim",
         {
-            "eldritch-theme/eldritch.nvim",
+            "folke/tokyonight.nvim",
             lazy = false,
             priority = 1000,
+            opts = {},
         },
         { "bluz71/vim-moonfly-colors",  name = "moonfly",  lazy = false, priority = 1001 },
         { "bluz71/vim-nightfly-colors", name = "nightfly", lazy = false, priority = 1002 },

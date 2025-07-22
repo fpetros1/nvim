@@ -40,6 +40,7 @@ M.setup = function()
     transparent.clear_prefix("Noice")
     transparent.clear_prefix("QuickFix")
     transparent.clear_prefix("Oil")
+    transparent.clear_prefix("Fzf")
 end
 
 return M

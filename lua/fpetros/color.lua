@@ -1,6 +1,7 @@
 local has_eldritch, eldritch = pcall(require, 'eldritch')
 local has_moonfly, moonfly = pcall(require, 'moonfly')
 local has_nightfly, nightfly = pcall(require, 'nightfly')
+local has_tokyonight, tokyonight = pcall(require, 'tokyonight')
 local env = require('fpetros.config.env')
 
 local M = {}
@@ -42,6 +43,12 @@ M.palette = function()
         }
     end
 
+    if has_tokyonight and env.colorscheme == 'tokyonight' then
+        return require('tokyonight.colors').setup({
+            style = 'storm'
+        })
+    end
+
     return {}
 end
 
@@ -50,7 +57,7 @@ M.setup = function()
         return
     end
 
-    if has_eldritch then
+    if has_eldritch and env.colorscheme == 'eldritch' then
         eldritch.setup({
             transparent = vim.g.neovide == nil,
             terminal_colors = true,
@@ -71,7 +78,8 @@ M.setup = function()
         });
     end
 
-    if has_moonfly then
+    if has_moonfly and env.colorscheme == 'moonfly' then
+        moonfly.setup()
         vim.g.moonflyCursorColor = true
         vim.g.moonflyTerminalColors = true
         vim.g.moonflyTransparent = true
@@ -81,7 +89,8 @@ M.setup = function()
         vim.g.moonflyUnderlineMatchParen = true
     end
 
-    if has_nightfly then
+    if has_nightfly and env.colorscheme == 'nightfly' then
+        nightfly.setup()
         vim.g.nightflyCursorColor = true
         vim.g.nightflyTerminalColors = true
         vim.g.nightflyTransparent = true
@@ -89,6 +98,13 @@ M.setup = function()
         vim.g.nightflyVirtualTextColor = true
         vim.g.nightflyWinSeparator = 2
         vim.g.nightflyUnderlineMatchParen = true
+    end
+
+    if has_tokyonight and env.colorscheme == 'tokyonight' then
+        tokyonight.setup({
+            style = "storm",
+            transparent = true
+        })
     end
 
     vim.cmd.colorscheme(env.colorscheme)
