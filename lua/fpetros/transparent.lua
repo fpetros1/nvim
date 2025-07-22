@@ -20,6 +20,7 @@ M.setup = function()
             'noice_lsp_docs',
         },
         exclude_groups = {
+            "BlinkCmpMenuSelection"
         },
     });
 
@@ -40,7 +41,7 @@ M.setup = function()
     transparent.clear_prefix("Noice")
     transparent.clear_prefix("QuickFix")
     transparent.clear_prefix("Oil")
-    transparent.clear_prefix("Fzf")
+    transparent.clear_prefix("Blink")
 end
 
 return M

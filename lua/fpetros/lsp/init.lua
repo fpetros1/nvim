@@ -1,7 +1,7 @@
 local has_lspconfig, _ = pcall(require, 'lspconfig')
 local has_mason, _ = pcall(require, 'mason')
 local has_mason_lsp, mason_lsp = pcall(require, 'mason-lspconfig')
-local has_fzf, fzf = pcall(require, 'fzf-lua')
+local has_snacks, snacks = pcall(require, 'snacks')
 local lazydev = require('fpetros.lsp.lazydev')
 local diagnostic = require('fpetros.lsp.diagnostic')
 local completion = require('fpetros.lsp.completion')
@@ -16,7 +16,7 @@ local color = require('fpetros.color')
 local M = {}
 
 M.can_setup = function()
-    return has_lspconfig and has_mason and has_mason_lsp and has_fzf and diagnostic.can_setup() and
+    return has_lspconfig and has_mason and has_mason_lsp and has_snacks and diagnostic.can_setup() and
         completion.can_setup() and trouble.can_setup() and env and env.lsp
 end
 
@@ -41,11 +41,12 @@ M.setup = function()
     local lsp_on_attach = function(client, bufnr)
         local opts = { buffer = bufnr, remap = false }
 
-        vim.keymap.set("n", "<leader>ca", function() fzf.lsp_code_actions({}) end, { desc = "LSP Code Actions" })
-        vim.keymap.set("n", "<leader>fr", function() fzf.lsp_references({}) end, { desc = "LSP find References" })
-        vim.keymap.set("n", "gd", function() fzf.lsp_definitions({}) end, { desc = "LSP Find Definitions" })
-        vim.keymap.set("n", "gi", function() fzf.lsp_implementations({}) end, { desc = "LSP Find Implementations" })
-        vim.keymap.set("n", "gD", function() fzf.lsp_declarations({}) end, { desc = "LSP Declarations" })
+        vim.keymap.set("n", "<leader>ca", function() vim.lsp.buf.code_action() end, { desc = "LSP Code Actions" })
+        vim.keymap.set("n", "<leader>fr", function() snacks.picker.lsp_references() end, { desc = "LSP find References" })
+        vim.keymap.set("n", "gd", function() snacks.picker.lsp_definitions() end, { desc = "LSP Find Definitions" })
+        vim.keymap.set("n", "gi", function() snacks.picker.lsp_implementations() end,
+            { desc = "LSP Find Implementations" })
+        vim.keymap.set("n", "gD", function() snacks.picker.lsp_declarations() end, { desc = "LSP Declarations" })
 
         vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
         vim.keymap.set("n", "<leader>ww", function() vim.lsp.buf.workspace_symbol() end, opts)

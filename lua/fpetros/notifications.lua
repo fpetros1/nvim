@@ -1,10 +1,9 @@
 local has_notify, notify = pcall(require, 'notify')
-local has_fzf, fzf = pcall(require, 'fzf-lua')
 
 local M = {}
 
 M.can_setup = function()
-    return has_notify and has_fzf
+    return has_notify
 end
 
 M.setup = function()
@@ -36,26 +35,6 @@ M.setup = function()
     })
 
     vim.notify = notify
-
-    local serializeNotification = function(notification)
-        local serialized = {}
-
-        table.insert(serialized, table.concat(notification.title, ''))
-        table.insert(serialized, notification.icon .. ' ' .. notification.level)
-        table.insert(serialized, table.concat(notification.message, ' '))
-
-        return table.concat(serialized, ' | ')
-    end
-
-
-    vim.keymap.set("n", "<leader>nn", function()
-        fzf.fzf_exec(function(fzf_cb)
-            for _, item in ipairs(require('notify').history()) do
-                fzf_cb(serializeNotification(item))
-            end
-            fzf_cb()
-        end, {})
-    end)
 end
 
 return M

@@ -20,7 +20,7 @@ local modules = {
     'lsp',
     'flash',
     'git',
-    'fzf',
+    'picker',
     'quickfix',
     'move',
     'transparent',

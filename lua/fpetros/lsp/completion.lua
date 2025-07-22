@@ -88,17 +88,6 @@ M.setup = function()
         }
     })
 
-    if vim.g.colors_name == 'eldritch' then
-        vim.api.nvim_set_hl(0, 'BlinkCmpMenu', { fg = '#ebfafa', bg = '#212337' })
-        vim.api.nvim_set_hl(0, 'BlinkCmpMenuBorder', { fg = '#37f499', bg = '#212337' })
-        vim.api.nvim_set_hl(0, 'BlinkCmpMenuSelection', { fg = '#ebfafa', bg = '#323449' })
-        vim.api.nvim_set_hl(0, 'BlinkCmpDoc', { fg = '#ebfafa', bg = '#212337' })
-        vim.api.nvim_set_hl(0, 'BlinkCmpDocBorder', { fg = '#37f499', bg = '#212337' })
-        vim.api.nvim_set_hl(0, 'BlinkCmpSignatureHelp', { fg = '#ebfafa', bg = '#212337' })
-        vim.api.nvim_set_hl(0, 'BlinkCmpSignatureHelpBorder', { fg = '#37f499', bg = '#212337' })
-        vim.api.nvim_set_hl(0, 'BlinkCmpSignatureHelpActiveParameter', { fg = '#04d1f9', bg = '#212337' })
-    end
-
     return blink.get_lsp_capabilities()
 end
 

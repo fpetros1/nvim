@@ -1,7 +1,7 @@
 local env = require('fpetros.config.env')
 local mvn = require('fpetros.lsp.java.mvn')
 local os_utils = require('fpetros.utils.os_utils')
-local has_fzf, fzf = pcall(require, 'fzf-lua')
+local has_snacks, snacks = pcall(require, 'snacks')
 local has_jdtls, jdtls = pcall(require, 'jdtls')
 
 local _M = {}
@@ -107,26 +107,17 @@ M.get_java_versions = function()
 end
 
 M.choose_java_version = function(root_dir)
-    if has_fzf then
-        fzf.fzf_exec(function(fzf_cb)
-            for _, item in ipairs(M.get_java_versions()) do
-                fzf_cb(item)
-            end
-            fzf_cb()
-        end, {
-            winopts = {
-                height = 0.30,
-                width = 0.30,
-            },
-            actions = {
-                ['default'] = function(selected)
-                    M.update_default_java(nil, selected[1], root_dir)
-                    M.update_version_file(root_dir)
-                    if has_jdtls then
-                        jdtls.set_runtime(selected[1])
-                    end
+    if has_snacks then
+        snacks.picker({
+            items = M.get_java_versions(),
+            confirm = function(picker, item)
+                picker:close()
+                M.update_default_java(nil, item[1], root_dir)
+                M.update_version_file(root_dir)
+                if has_jdtls then
+                    jdtls.set_runtime(item[1])
                 end
-            }
+            end
         })
     end
 end

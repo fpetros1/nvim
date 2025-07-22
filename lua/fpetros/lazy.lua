@@ -30,11 +30,6 @@ M.setup = function()
             dependencies = { 'nvim-tree/nvim-web-devicons' }
         },
         {
-            "ibhagwan/fzf-lua",
-            dependencies = { "nvim-tree/nvim-web-devicons" },
-            opts = {}
-        },
-        {
             "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
             as = "lsp_lines"
         },
@@ -133,7 +128,25 @@ M.setup = function()
             }
         },
         'folke/lazydev.nvim',
-        'sphamba/smear-cursor.nvim'
+        'sphamba/smear-cursor.nvim',
+        {
+            "folke/snacks.nvim",
+            lazy = false,
+            opts = {
+                bigfile = { enabled = true },
+                dashboard = { enabled = false },
+                explorer = { enabled = false },
+                indent = { enabled = false },
+                input = { enabled = false },
+                picker = { enabled = true },
+                notifier = { enabled = false },
+                quickfile = { enabled = false },
+                scope = { enabled = true },
+                scroll = { enabled = false },
+                statuscolumn = { enabled = false },
+                words = { enabled = false },
+            },
+        }
     });
 end
 
