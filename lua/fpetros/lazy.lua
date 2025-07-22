@@ -90,21 +90,6 @@ M.setup = function()
             branch = "harpoon2",
             dependencies = { "nvim-lua/plenary.nvim" }
         },
-        {
-            "kdheepak/lazygit.nvim",
-            as = 'lazygit',
-            lazy = true,
-            cmd = {
-                "LazyGit",
-                "LazyGitConfig",
-                "LazyGitCurrentFile",
-                "LazyGitFilter",
-                "LazyGitFilterCurrentFile",
-            },
-            dependencies = {
-                "nvim-lua/plenary.nvim",
-            }
-        },
         "lewis6991/gitsigns.nvim",
         {
             'MeanderingProgrammer/render-markdown.nvim',
@@ -134,17 +119,11 @@ M.setup = function()
             lazy = false,
             opts = {
                 bigfile = { enabled = true },
-                dashboard = { enabled = false },
-                explorer = { enabled = false },
-                indent = { enabled = false },
-                input = { enabled = false },
                 picker = { enabled = true },
-                notifier = { enabled = false },
-                quickfile = { enabled = false },
-                scope = { enabled = true },
-                scroll = { enabled = false },
-                statuscolumn = { enabled = false },
-                words = { enabled = false },
+                lazygit = { enabled = true },
+                rename = { enabled = true },
+                quickfile = { enabled = true },
+                words = { enabled = true },
             },
         }
     });

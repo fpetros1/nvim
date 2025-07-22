@@ -1,10 +1,10 @@
-local has_lazygit, lazygit = pcall(require, 'lazygit')
+local has_snacks, snacks = pcall(require, 'snacks')
 local filemanager = require('fpetros.filemanager')
 
 local M = {}
 
 M.can_setup = function()
-    return has_lazygit
+    return has_snacks
 end
 
 M.setup = function()
@@ -14,7 +14,7 @@ M.setup = function()
 
     vim.keymap.set('n', '<leader>ggg', function()
         filemanager.close_if_open(true)
-        vim.cmd('LazyGit')
+        snacks.lazygit()
     end, { desc = 'Open Lazygit' })
 end
 

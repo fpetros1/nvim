@@ -1,6 +1,7 @@
 local has_oil, oil = pcall(require, 'oil')
 local has_oil_util, oil_util = pcall(require, 'oil.util')
 local has_oil_git, oil_git = pcall(require, 'oil-git-status')
+local has_snacks, snacks = pcall(require, 'snacks')
 local color = require('fpetros.color')
 
 local is_open = false
@@ -190,6 +191,17 @@ M.setup = function()
             end
         }
     )
+
+    if has_snacks then
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "OilActionsPost",
+            callback = function(event)
+                if event.data.actions.type == "move" then
+                    snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
+                end
+            end,
+        })
+    end
 
     local palette = color.palette()
 

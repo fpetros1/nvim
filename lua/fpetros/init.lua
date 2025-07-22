@@ -23,6 +23,7 @@ local modules = {
     'picker',
     'quickfix',
     'move',
+    'snacks',
     'transparent',
 }
 
