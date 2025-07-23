@@ -59,8 +59,8 @@ M.setup = function()
         },
         float = {
             padding = 2,
-            max_width = 0.6,
-            max_height = 0,
+            max_width = 0.85,
+            max_height = 0.8,
             border = "rounded",
             win_options = {
                 winblend = 0,
@@ -68,7 +68,7 @@ M.setup = function()
             -- optionally override the oil buffers window title with custom function: fun(winid: integer): string
             get_win_title = nil,
             -- preview_split: Split direction: "auto", "left", "right", "above", "below".
-            preview_split = "above",
+            preview_split = "right",
             -- This is the config that will be passed to nvim_open_win.
             -- Change values here to customize the layout
             override = function(conf)
