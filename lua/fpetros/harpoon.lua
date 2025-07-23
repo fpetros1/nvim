@@ -1,5 +1,6 @@
 local has_harpoon, harpoon = pcall(require, "harpoon")
 local has_snacks, snacks = pcall(require, "snacks")
+local filemanager = require("fpetros.filemanager")
 
 local M = {}
 local _M = {}
@@ -23,6 +24,8 @@ M.setup = function()
 end
 
 _M.open_harpoon_picker = function()
+    filemanager.close_if_open(true)
+
     local items = harpoon:list().items
 
     for n, _ in ipairs(items) do
